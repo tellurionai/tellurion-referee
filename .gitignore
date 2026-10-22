@@ -3,8 +3,3 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 artifacts/
-# Datasets are handed off as zips; never commit them (the tracked stub is the exception).
-data/*
-!data/stub_pendulum.npz
-!data/stub_pendulum.metadata.json
-*.test.npz
