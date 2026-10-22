@@ -412,10 +412,26 @@ def main(argv=None, ensemble=None) -> dict:
 
     steps_dir = Path(args.steps_out)
     steps_dir.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(steps_dir / f"{args.split}_steps.npz", trajectory_id=ds["trajectory_id"],
-                        forecast_mean=fc["mean"], forecast_std=fc["std"],
-                        **{f"score_{m}": scores[m] for m in DETECTION_METHODS},
-                        **{f"flag_{m}": flags[m] for m in DETECTION_METHODS})
+    # Everything the replay exporter (scripts/export_replays.py) needs, so it never opens
+    # the dataset (the locked test archive is read only here).
+    referee_first = methods["referee"]["detection"]["_per_trajectory"]["detected_at"]
+    np.savez_compressed(
+        steps_dir / f"{args.split}_steps.npz",
+        split=np.array(args.split), git_commit=np.array(report["git"]["commit"] or ""),
+        checkpoint_sha256=np.array(report["model"]["checkpoint_sha256"]),
+        trajectory_id=ds["trajectory_id"], times=ds["times"],
+        true_theta=ds["true_states"][..., 0],
+        measured_theta=np.where(ds["measured_mask"][..., 0].astype(bool), ds["measured_states"][..., 0], np.nan),
+        L=np.array([p["L"] for p in ds["nominal"]]),
+        regime=ds["regime"], perturbation_type=ds["perturbation_type"],
+        perturbation_subtype=ds["perturbation_subtype"], severity=ds["severity"],
+        onset_step=ds["onset_step"], expected_verdict=ds["expected_verdict"],
+        forecast_mean=fc["mean"], forecast_std=fc["std"],
+        referee_verdict=np.asarray(predicted["referee"]), referee_evidence=np.array(evidence),
+        referee_first_flag=E.detection_steps(flags["referee"], None), referee_detected_at=referee_first,
+        **{f"threshold_{m}": np.array(fitted["thresholds"][m]) for m in DETECTION_METHODS},
+        **{f"score_{m}": scores[m] for m in DETECTION_METHODS},
+        **{f"flag_{m}": flags[m] for m in DETECTION_METHODS})
 
     r, b1 = methods["referee"], methods["b1_ensemble_uncertainty"]
     print(f"{args.split}: {summary['n_trajectories']} trajectories ({summary['n_clean']} clean)")
