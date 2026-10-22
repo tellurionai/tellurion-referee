@@ -1,0 +1,6913 @@
+{
+  "split": "test",
+  "created_at": "2026-10-22T17:59:54+00:00",
+  "command": "python scripts/evaluate.py --config configs/base.yaml --split test --confirm-locked-test --model models/world_model",
+  "git": {
+    "commit": "edc0d7af5e63223a83aa3b266f43bf204eb0ae93",
+    "dirty": false
+  },
+  "seed": 0,
+  "config": {
+    "seed": 0,
+    "data_dir": "data/pendulum_v1"
+  },
+  "dataset": {
+    "file": "data/pendulum_v1.test.npz",
+    "sha256": "016f1a36998ab90e94a45161867bfd9ef474129c081b5caa32468ff9a60ee9ac",
+    "metadata": {
+      "system": "pendulum",
+      "state_names": [
+        "theta",
+        "omega"
+      ],
+      "state_units": [
+        "rad",
+        "rad/s"
+      ],
+      "param_names": [
+        "g",
+        "L",
+        "m",
+        "b"
+      ],
+      "param_units": [
+        "m/s^2",
+        "m",
+        "kg",
+        "N\u00b7m\u00b7s/rad"
+      ],
+      "nominal_params": {
+        "g": 9.81,
+        "L": 1.0,
+        "m": 1.0,
+        "b": 0.0
+      },
+      "dt": 0.05,
+      "n_steps": 200,
+      "horizon_s": 10.0,
+      "solver": {
+        "method": "DOP853",
+        "rtol": 1e-09,
+        "atol": 1e-11,
+        "restart": "every grid step"
+      },
+      "seed": 0,
+      "git_commit": "619dea0fec6d5295a934a7da9efbf4fd9b5b81d4",
+      "severity_table": {
+        "param_shift": {
+          "length": {
+            "low": 1.05,
+            "med": 1.15,
+            "high": 1.3
+          },
+          "gravity": {
+            "low": 0.95,
+            "med": 0.85,
+            "high": 0.7
+          },
+          "damping": {
+            "low": 0.05,
+            "med": 0.15,
+            "high": 0.4
+          }
+        },
+        "sensor_fault": {
+          "bias": {
+            "low": 0.03,
+            "med": 0.08,
+            "high": 0.2
+          },
+          "drift": {
+            "low": 0.03,
+            "med": 0.08,
+            "high": 0.2
+          },
+          "noise": {
+            "low": 0.01,
+            "med": 0.03,
+            "high": 0.08
+          },
+          "scale": {
+            "low": 0.03,
+            "med": 0.1,
+            "high": 0.25
+          },
+          "stuck": {
+            "low": 1,
+            "med": 1,
+            "high": 1
+          },
+          "dropout": {
+            "low": 0.05,
+            "med": 0.2,
+            "high": 0.5
+          }
+        },
+        "unseen_force": {
+          "constant_torque": {
+            "low": 0.2,
+            "med": 0.5,
+            "high": 1.0
+          },
+          "magnet": {
+            "low": 0.5,
+            "med": 1.5,
+            "high": 3.0
+          },
+          "periodic_drive": {
+            "low": 0.3,
+            "med": 0.8,
+            "high": 2.0
+          },
+          "impulse": {
+            "low": 0.3,
+            "med": 0.8,
+            "high": 2.0
+          }
+        }
+      },
+      "magnet_phi_m": 1.2,
+      "periodic_drive_w": 2.5,
+      "onset": {
+        "min": 40,
+        "max": 120
+      },
+      "split_sizes": {
+        "train": 2000,
+        "val": 400,
+        "cal": 600,
+        "test": 1000
+      },
+      "clean_gentle_frac": 0.2,
+      "split_rules": "train/val: gentle + none only. cal/test: clean gentle share plus regime x type x severity cycle. Split by trajectory_id. test is locked.",
+      "sensor_model": "theta and omega both measured; sensor faults corrupt theta only",
+      "verdict_rule": "none -> trust in gentle, model_error otherwise; param_shift -> model_error; sensor_fault -> instrument_fault; unseen_force -> discovery",
+      "generated_at": "2026-10-22T04:16:37+00:00",
+      "files": {
+        "dev": "pendulum_v1.npz",
+        "test": "pendulum_v1.test.npz"
+      }
+    }
+  },
+  "model": {
+    "dir": "models/world_model",
+    "checkpoint_sha256": [
+      "3e2118e1c16b8c2643e89332d21c3d9b497b8f645d2d2862bf1d79c62eaf01c7",
+      "a9653dae65701cad090f58c66d8f7391f5ddcf4b43789aeef49e28db84b1a1b1",
+      "21e9ea552183bd56f0b73e1e855075454d33fb94046b5723aa8350519b756895",
+      "3ebc2f345a20c486b2dde833b9ecc6c0a3ad943e8ff38744b723fd58d89af1d0",
+      "97a6f8ae435021df75f54275d376dfabc015dc05006a9e959d549f7a77a1302b"
+    ]
+  },
+  "settings": {
+    "sustain_steps": 3,
+    "target_false_alarm_rate": 0.05,
+    "confidently_wrong_tau": 0.25,
+    "confident_percentile": 80,
+    "referee_window_steps": 21,
+    "bootstrap_samples": 1000,
+    "state_scale": [
+      0.2684919536113739,
+      0.8349908590316772
+    ],
+    "thresholds_fit_on": "cal, clean (trust) trajectories only"
+  },
+  "referee_fit": {
+    "referee_own_residual_threshold": 0.01,
+    "shared_residual_threshold": 0.00024474882324988323,
+    "check_thresholds": {
+      "sensor_inconsistency": 0.01,
+      "fit_error": 0.01
+    },
+    "cal_clean_windows": 408
+  },
+  "summary": {
+    "n_trajectories": 1000,
+    "n_clean": 227,
+    "verdict_counts": {
+      "trust": 227,
+      "model_error": 293,
+      "instrument_fault": 240,
+      "discovery": 240
+    },
+    "confidently_wrong_steps": 451,
+    "confidently_wrong_trajectories": 37
+  },
+  "methods": {
+    "referee": {
+      "threshold": 0.00024474882324988323,
+      "detection": {
+        "n_positive": 773,
+        "n_clean": 227,
+        "auroc": 0.9814157325142047,
+        "detected": 745,
+        "miss_rate": 0.036222509702457995,
+        "delay_steps_median": 0.0,
+        "false_alarm_rate": 0.05286343612334802,
+        "pre_onset_false_alarm_rate": 0.6777777777777778,
+        "delay_steps": [
+          0,
+          0,
+          15,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          1,
+          1,
+          0,
+          -1,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          30,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          -1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          7,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          1,
+          4,
+          0,
+          0,
+          0,
+          1,
+          4,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          12,
+          1,
+          1,
+          1,
+          0,
+          1,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          52,
+          1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          3,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          13,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          33,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          3,
+          0,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          4,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          2,
+          1,
+          1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          -1,
+          0,
+          8,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          43,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          1,
+          31,
+          18,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          -1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          4,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          -1,
+          1,
+          0,
+          0,
+          2,
+          -1,
+          0,
+          26,
+          0,
+          1,
+          0,
+          1,
+          0,
+          -1,
+          0,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          -1,
+          0,
+          48,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          -1,
+          4,
+          0,
+          1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          66,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          5,
+          0,
+          0,
+          0,
+          -1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          -1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          -1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          -1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          7,
+          0,
+          0,
+          -1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          5,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          3,
+          1,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          -1,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1
+        ],
+        "ci": {
+          "auroc": {
+            "point": 0.9814157325142047,
+            "ci95": [
+              0.9726197649729995,
+              0.9888256130743837
+            ],
+            "n": 1000,
+            "samples": 1000,
+            "undefined_samples": 0,
+            "seed": 0
+          },
+          "miss_rate": {
+            "point": 0.03622250970245795,
+            "ci95": [
+              0.0243574168797954,
+              0.0503351641595278
+            ],
+            "n": 1000,
+            "samples": 1000,
+            "undefined_samples": 0,
+            "seed": 0
+          },
+          "false_alarm_rate": {
+            "point": 0.05286343612334802,
+            "ci95": [
+              0.025204831932773116,
+              0.0841166254878791
+            ],
+            "n": 1000,
+            "samples": 1000,
+            "undefined_samples": 0,
+            "seed": 0
+          },
+          "delay_steps_median": {
+            "point": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "n": 1000,
+            "samples": 1000,
+            "undefined_samples": 0,
+            "seed": 0
+          }
+        },
+        "detected_rate_by_severity": {
+          "high": 0.9583333333333334,
+          "low": 0.9708333333333333,
+          "med": 0.9541666666666667,
+          "none": 1.0
+        }
+      },
+      "confidently_wrong_recall": 1.0,
+      "diagnosis": {
+        "labels": [
+          "trust",
+          "model_error",
+          "instrument_fault",
+          "discovery"
+        ],
+        "n": 1000,
+        "accuracy": 0.56,
+        "macro_f1": 0.4716242290736083,
+        "confusion": [
+          [
+            215,
+            12,
+            0,
+            0
+          ],
+          [
+            0,
+            292,
+            0,
+            1
+          ],
+          [
+            13,
+            187,
+            40,
+            0
+          ],
+          [
+            15,
+            205,
+            7,
+            13
+          ]
+        ],
+        "recall": {
+          "trust": 0.947136563876652,
+          "model_error": 0.9965870307167235,
+          "instrument_fault": 0.16666666666666666,
+          "discovery": 0.05416666666666667
+        },
+        "by_severity": {
+          "high": {
+            "n": 240,
+            "accuracy": 0.4166666666666667,
+            "macro_f1": 0.3355158652565871,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                79,
+                0,
+                1
+              ],
+              [
+                8,
+                61,
+                11,
+                0
+              ],
+              [
+                2,
+                61,
+                7,
+                10
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 0.9875,
+              "instrument_fault": 0.1375,
+              "discovery": 0.125
+            }
+          },
+          "low": {
+            "n": 240,
+            "accuracy": 0.39166666666666666,
+            "macro_f1": 0.2776631324272397,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                80,
+                0,
+                0
+              ],
+              [
+                1,
+                65,
+                14,
+                0
+              ],
+              [
+                6,
+                74,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": 0.175,
+              "discovery": 0.0
+            }
+          },
+          "med": {
+            "n": 240,
+            "accuracy": 0.4083333333333333,
+            "macro_f1": 0.3126356030016249,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                80,
+                0,
+                0
+              ],
+              [
+                4,
+                61,
+                15,
+                0
+              ],
+              [
+                7,
+                70,
+                0,
+                3
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": 0.1875,
+              "discovery": 0.0375
+            }
+          },
+          "none": {
+            "n": 280,
+            "accuracy": 0.9571428571428572,
+            "macro_f1": 0.9355778817393972,
+            "confusion": [
+              [
+                215,
+                12,
+                0,
+                0
+              ],
+              [
+                0,
+                53,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": 0.947136563876652,
+              "model_error": 1.0,
+              "instrument_fault": null,
+              "discovery": null
+            }
+          }
+        },
+        "by_perturbation_subtype": {
+          "bias": {
+            "n": 40,
+            "accuracy": 0.175,
+            "macro_f1": 0.2978723404255319,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                33,
+                7,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.175,
+              "discovery": null
+            }
+          },
+          "constant_torque": {
+            "n": 66,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                66,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": null,
+              "discovery": 0.0
+            }
+          },
+          "damping": {
+            "n": 69,
+            "accuracy": 1.0,
+            "macro_f1": 1.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                69,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": null,
+              "discovery": null
+            }
+          },
+          "drift": {
+            "n": 56,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                56,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.0,
+              "discovery": null
+            }
+          },
+          "dropout": {
+            "n": 45,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                13,
+                32,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.0,
+              "discovery": null
+            }
+          },
+          "gravity": {
+            "n": 91,
+            "accuracy": 0.989010989010989,
+            "macro_f1": 0.994475138121547,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                90,
+                0,
+                1
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 0.989010989010989,
+              "instrument_fault": null,
+              "discovery": null
+            }
+          },
+          "impulse": {
+            "n": 54,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                15,
+                32,
+                7,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": null,
+              "discovery": 0.0
+            }
+          },
+          "length": {
+            "n": 80,
+            "accuracy": 1.0,
+            "macro_f1": 1.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                80,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": null,
+              "discovery": null
+            }
+          },
+          "magnet": {
+            "n": 71,
+            "accuracy": 0.1267605633802817,
+            "macro_f1": 0.225,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                62,
+                0,
+                9
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": null,
+              "discovery": 0.1267605633802817
+            }
+          },
+          "noise": {
+            "n": 41,
+            "accuracy": 0.3170731707317073,
+            "macro_f1": 0.48148148148148145,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                28,
+                13,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.3170731707317073,
+              "discovery": null
+            }
+          },
+          "none": {
+            "n": 280,
+            "accuracy": 0.9571428571428572,
+            "macro_f1": 0.9355778817393972,
+            "confusion": [
+              [
+                215,
+                12,
+                0,
+                0
+              ],
+              [
+                0,
+                53,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": 0.947136563876652,
+              "model_error": 1.0,
+              "instrument_fault": null,
+              "discovery": null
+            }
+          },
+          "periodic_drive": {
+            "n": 49,
+            "accuracy": 0.08163265306122448,
+            "macro_f1": 0.1509433962264151,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                45,
+                0,
+                4
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": null,
+              "discovery": 0.08163265306122448
+            }
+          },
+          "scale": {
+            "n": 36,
+            "accuracy": 0.3055555555555556,
+            "macro_f1": 0.46808510638297873,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                25,
+                11,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.3055555555555556,
+              "discovery": null
+            }
+          },
+          "stuck": {
+            "n": 22,
+            "accuracy": 0.4090909090909091,
+            "macro_f1": 0.5806451612903226,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                13,
+                9,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.4090909090909091,
+              "discovery": null
+            }
+          }
+        },
+        "by_regime": {
+          "gentle": {
+            "n": 470,
+            "accuracy": 0.7404255319148936,
+            "macro_f1": 0.6153377767249548,
+            "confusion": [
+              [
+                215,
+                12,
+                0,
+                0
+              ],
+              [
+                0,
+                80,
+                0,
+                1
+              ],
+              [
+                13,
+                28,
+                40,
+                0
+              ],
+              [
+                15,
+                46,
+                7,
+                13
+              ]
+            ],
+            "recall": {
+              "trust": 0.947136563876652,
+              "model_error": 0.9876543209876543,
+              "instrument_fault": 0.49382716049382713,
+              "discovery": 0.16049382716049382
+            }
+          },
+          "large": {
+            "n": 270,
+            "accuracy": 0.4,
+            "macro_f1": 0.19047619047619047,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                108,
+                0,
+                0
+              ],
+              [
+                0,
+                81,
+                0,
+                0
+              ],
+              [
+                0,
+                81,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": 0.0,
+              "discovery": 0.0
+            }
+          },
+          "rotating": {
+            "n": 260,
+            "accuracy": 0.4,
+            "macro_f1": 0.19047619047619047,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                104,
+                0,
+                0
+              ],
+              [
+                0,
+                78,
+                0,
+                0
+              ],
+              [
+                0,
+                78,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": 0.0,
+              "discovery": 0.0
+            }
+          }
+        },
+        "macro_f1_ci": {
+          "point": 0.4716242290736083,
+          "ci95": [
+            0.44423750312807864,
+            0.4974361012571017
+          ],
+          "n": 1000,
+          "samples": 1000,
+          "undefined_samples": 0,
+          "seed": 0
+        }
+      }
+    },
+    "b1_ensemble_uncertainty": {
+      "threshold": 0.0003182564256340481,
+      "detection": {
+        "n_positive": 773,
+        "n_clean": 227,
+        "auroc": 0.8676305486376666,
+        "detected": 573,
+        "miss_rate": 0.258732212160414,
+        "delay_steps_median": 0.0,
+        "false_alarm_rate": 0.06167400881057269,
+        "pre_onset_false_alarm_rate": 0.675,
+        "delay_steps": [
+          0,
+          0,
+          15,
+          0,
+          0,
+          0,
+          0,
+          62,
+          -1,
+          1,
+          0,
+          0,
+          -1,
+          1,
+          0,
+          -1,
+          0,
+          1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          15,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          -1,
+          -1,
+          0,
+          -1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          1,
+          -1,
+          20,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          -1,
+          0,
+          -1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          -1,
+          -1,
+          -1,
+          0,
+          -1,
+          -1,
+          -1,
+          0,
+          0,
+          -1,
+          0,
+          -1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          11,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          24,
+          -1,
+          0,
+          -1,
+          0,
+          0,
+          -1,
+          0,
+          21,
+          0,
+          1,
+          -1,
+          -1,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          -1,
+          0,
+          0,
+          53,
+          -1,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          1,
+          0,
+          0,
+          -1,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          12,
+          1,
+          1,
+          1,
+          0,
+          -1,
+          -1,
+          0,
+          0,
+          39,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          14,
+          0,
+          -1,
+          -1,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          124,
+          -1,
+          -1,
+          1,
+          -1,
+          0,
+          3,
+          73,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          3,
+          -1,
+          1,
+          -1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          6,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          -1,
+          0,
+          -1,
+          9,
+          0,
+          -1,
+          1,
+          -1,
+          0,
+          0,
+          -1,
+          0,
+          -1,
+          -1,
+          0,
+          1,
+          6,
+          1,
+          0,
+          0,
+          -1,
+          0,
+          -1,
+          -1,
+          0,
+          0,
+          -1,
+          9,
+          0,
+          0,
+          1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          7,
+          0,
+          0,
+          0,
+          1,
+          -1,
+          -1,
+          0,
+          -1,
+          1,
+          0,
+          0,
+          0,
+          -1,
+          -1,
+          -1,
+          -1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          3,
+          0,
+          -1,
+          -1,
+          -1,
+          0,
+          101,
+          -1,
+          0,
+          0,
+          0,
+          -1,
+          -1,
+          0,
+          -1,
+          -1,
+          0,
+          8,
+          -1,
+          0,
+          -1,
+          0,
+          1,
+          -1,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          29,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          -1,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          8,
+          0,
+          1,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          -1,
+          22,
+          14,
+          0,
+          -1,
+          0,
+          44,
+          0,
+          0,
+          -1,
+          -1,
+          0,
+          0,
+          -1,
+          0,
+          1,
+          -1,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          1,
+          -1,
+          -1,
+          -1,
+          0,
+          12,
+          1,
+          -1,
+          96,
+          0,
+          0,
+          0,
+          0,
+          25,
+          0,
+          0,
+          0,
+          1,
+          0,
+          73,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          -1,
+          -1,
+          0,
+          31,
+          0,
+          1,
+          0,
+          -1,
+          0,
+          0,
+          -1,
+          -1,
+          -1,
+          0,
+          -1,
+          -1,
+          0,
+          0,
+          1,
+          0,
+          -1,
+          0,
+          -1,
+          9,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          1,
+          -1,
+          1,
+          0,
+          0,
+          -1,
+          -1,
+          0,
+          26,
+          0,
+          1,
+          -1,
+          1,
+          0,
+          -1,
+          0,
+          1,
+          0,
+          -1,
+          12,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          10,
+          0,
+          -1,
+          0,
+          29,
+          1,
+          -1,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          -1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          -1,
+          -1,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          -1,
+          4,
+          -1,
+          -1,
+          1,
+          0,
+          0,
+          -1,
+          0,
+          -1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          6,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          -1,
+          0,
+          0,
+          1,
+          -1,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          -1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          41,
+          -1,
+          0,
+          -1,
+          0,
+          0,
+          -1,
+          0,
+          -1,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          -1,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          -1,
+          13,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          -1,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          31,
+          -1,
+          -1,
+          -1,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          1,
+          0,
+          -1,
+          -1,
+          0,
+          0,
+          0,
+          16,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          1,
+          -1,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          -1,
+          -1,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          -1,
+          -1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          -1,
+          0,
+          7,
+          0,
+          1,
+          -1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          64,
+          0,
+          -1,
+          0,
+          -1,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          5,
+          0,
+          5,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          1,
+          0,
+          1,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          3,
+          1,
+          0,
+          0,
+          -1,
+          -1,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          -1,
+          31,
+          0,
+          -1,
+          0,
+          0,
+          1,
+          17,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          -1,
+          1,
+          0,
+          -1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          -1,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          -1,
+          0,
+          0,
+          7
+        ],
+        "ci": {
+          "auroc": {
+            "point": 0.8676305486376666,
+            "ci95": [
+              0.8460349821514668,
+              0.8873737253437247
+            ],
+            "n": 1000,
+            "samples": 1000,
+            "undefined_samples": 0,
+            "seed": 0
+          },
+          "miss_rate": {
+            "point": 0.258732212160414,
+            "ci95": [
+              0.22913844412775589,
+              0.28904243596753165
+            ],
+            "n": 1000,
+            "samples": 1000,
+            "undefined_samples": 0,
+            "seed": 0
+          },
+          "false_alarm_rate": {
+            "point": 0.06167400881057269,
+            "ci95": [
+              0.03333333333333333,
+              0.0968996516750333
+            ],
+            "n": 1000,
+            "samples": 1000,
+            "undefined_samples": 0,
+            "seed": 0
+          },
+          "delay_steps_median": {
+            "point": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "n": 1000,
+            "samples": 1000,
+            "undefined_samples": 0,
+            "seed": 0
+          }
+        },
+        "detected_rate_by_severity": {
+          "high": 0.7583333333333333,
+          "low": 0.7,
+          "med": 0.7083333333333334,
+          "none": 1.0
+        }
+      },
+      "confidently_wrong_recall": 0.0,
+      "diagnosis": {
+        "labels": [
+          "trust",
+          "model_error",
+          "instrument_fault",
+          "discovery"
+        ],
+        "n": 1000,
+        "accuracy": 0.433,
+        "macro_f1": 0.2922599742462211,
+        "confusion": [
+          [
+            213,
+            14,
+            0,
+            0
+          ],
+          [
+            73,
+            220,
+            0,
+            0
+          ],
+          [
+            66,
+            174,
+            0,
+            0
+          ],
+          [
+            54,
+            186,
+            0,
+            0
+          ]
+        ],
+        "recall": {
+          "trust": 0.9383259911894273,
+          "model_error": 0.7508532423208191,
+          "instrument_fault": 0.0,
+          "discovery": 0.0
+        },
+        "by_severity": {
+          "high": {
+            "n": 240,
+            "accuracy": 0.22916666666666666,
+            "macro_f1": 0.13836477987421383,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                25,
+                55,
+                0,
+                0
+              ],
+              [
+                20,
+                60,
+                0,
+                0
+              ],
+              [
+                10,
+                70,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 0.6875,
+              "instrument_fault": 0.0,
+              "discovery": 0.0
+            }
+          },
+          "low": {
+            "n": 240,
+            "accuracy": 0.23333333333333334,
+            "macro_f1": 0.14933333333333335,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                24,
+                56,
+                0,
+                0
+              ],
+              [
+                24,
+                56,
+                0,
+                0
+              ],
+              [
+                22,
+                58,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 0.7,
+              "instrument_fault": 0.0,
+              "discovery": 0.0
+            }
+          },
+          "med": {
+            "n": 240,
+            "accuracy": 0.23333333333333334,
+            "macro_f1": 0.14814814814814814,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                24,
+                56,
+                0,
+                0
+              ],
+              [
+                22,
+                58,
+                0,
+                0
+              ],
+              [
+                22,
+                58,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 0.7,
+              "instrument_fault": 0.0,
+              "discovery": 0.0
+            }
+          },
+          "none": {
+            "n": 280,
+            "accuracy": 0.95,
+            "macro_f1": 0.9257575757575758,
+            "confusion": [
+              [
+                213,
+                14,
+                0,
+                0
+              ],
+              [
+                0,
+                53,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": 0.9383259911894273,
+              "model_error": 1.0,
+              "instrument_fault": null,
+              "discovery": null
+            }
+          }
+        },
+        "by_perturbation_subtype": {
+          "bias": {
+            "n": 40,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                6,
+                34,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.0,
+              "discovery": null
+            }
+          },
+          "constant_torque": {
+            "n": 66,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                18,
+                48,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": null,
+              "discovery": 0.0
+            }
+          },
+          "damping": {
+            "n": 69,
+            "accuracy": 0.6521739130434783,
+            "macro_f1": 0.7894736842105263,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                24,
+                45,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 0.6521739130434783,
+              "instrument_fault": null,
+              "discovery": null
+            }
+          },
+          "drift": {
+            "n": 56,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                16,
+                40,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.0,
+              "discovery": null
+            }
+          },
+          "dropout": {
+            "n": 45,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                13,
+                32,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.0,
+              "discovery": null
+            }
+          },
+          "gravity": {
+            "n": 91,
+            "accuracy": 0.7252747252747253,
+            "macro_f1": 0.8407643312101911,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                25,
+                66,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 0.7252747252747253,
+              "instrument_fault": null,
+              "discovery": null
+            }
+          },
+          "impulse": {
+            "n": 54,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                15,
+                39,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": null,
+              "discovery": 0.0
+            }
+          },
+          "length": {
+            "n": 80,
+            "accuracy": 0.7,
+            "macro_f1": 0.8235294117647058,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                24,
+                56,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 0.7,
+              "instrument_fault": null,
+              "discovery": null
+            }
+          },
+          "magnet": {
+            "n": 71,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                15,
+                56,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": null,
+              "discovery": 0.0
+            }
+          },
+          "noise": {
+            "n": 41,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                16,
+                25,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.0,
+              "discovery": null
+            }
+          },
+          "none": {
+            "n": 280,
+            "accuracy": 0.95,
+            "macro_f1": 0.9257575757575758,
+            "confusion": [
+              [
+                213,
+                14,
+                0,
+                0
+              ],
+              [
+                0,
+                53,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": 0.9383259911894273,
+              "model_error": 1.0,
+              "instrument_fault": null,
+              "discovery": null
+            }
+          },
+          "periodic_drive": {
+            "n": 49,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                6,
+                43,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": null,
+              "discovery": 0.0
+            }
+          },
+          "scale": {
+            "n": 36,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                9,
+                27,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.0,
+              "discovery": null
+            }
+          },
+          "stuck": {
+            "n": 22,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                6,
+                16,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.0,
+              "discovery": null
+            }
+          }
+        },
+        "by_regime": {
+          "gentle": {
+            "n": 470,
+            "accuracy": 0.4702127659574468,
+            "macro_f1": 0.19583265239418204,
+            "confusion": [
+              [
+                213,
+                14,
+                0,
+                0
+              ],
+              [
+                73,
+                8,
+                0,
+                0
+              ],
+              [
+                66,
+                15,
+                0,
+                0
+              ],
+              [
+                54,
+                27,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": 0.9383259911894273,
+              "model_error": 0.09876543209876543,
+              "instrument_fault": 0.0,
+              "discovery": 0.0
+            }
+          },
+          "large": {
+            "n": 270,
+            "accuracy": 0.4,
+            "macro_f1": 0.19047619047619047,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                108,
+                0,
+                0
+              ],
+              [
+                0,
+                81,
+                0,
+                0
+              ],
+              [
+                0,
+                81,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": 0.0,
+              "discovery": 0.0
+            }
+          },
+          "rotating": {
+            "n": 260,
+            "accuracy": 0.4,
+            "macro_f1": 0.19047619047619047,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                104,
+                0,
+                0
+              ],
+              [
+                0,
+                78,
+                0,
+                0
+              ],
+              [
+                0,
+                78,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": 0.0,
+              "discovery": 0.0
+            }
+          }
+        },
+        "macro_f1_ci": {
+          "point": 0.2922599742462211,
+          "ci95": [
+            0.2761671189261845,
+            0.30723135457205303
+          ],
+          "n": 1000,
+          "samples": 1000,
+          "undefined_samples": 0,
+          "seed": 0
+        }
+      }
+    },
+    "b2_residual": {
+      "threshold": 0.00032683911262831866,
+      "detection": {
+        "n_positive": 773,
+        "n_clean": 227,
+        "auroc": 0.9816322925155724,
+        "detected": 745,
+        "miss_rate": 0.036222509702457995,
+        "delay_steps_median": 0.0,
+        "false_alarm_rate": 0.07048458149779736,
+        "pre_onset_false_alarm_rate": 0.6833333333333333,
+        "delay_steps": [
+          0,
+          0,
+          15,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          1,
+          1,
+          0,
+          -1,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          30,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          -1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          7,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          3,
+          1,
+          0,
+          0,
+          0,
+          1,
+          4,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          12,
+          1,
+          1,
+          1,
+          0,
+          1,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          52,
+          1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          3,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          13,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          33,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          4,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          2,
+          1,
+          1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          -1,
+          0,
+          8,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          43,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          1,
+          31,
+          18,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          -1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          4,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          -1,
+          1,
+          0,
+          0,
+          1,
+          -1,
+          0,
+          26,
+          0,
+          1,
+          0,
+          1,
+          0,
+          -1,
+          0,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          -1,
+          0,
+          48,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          -1,
+          4,
+          0,
+          1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          66,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          5,
+          0,
+          0,
+          0,
+          -1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          -1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          -1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          -1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          7,
+          0,
+          0,
+          -1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          5,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          3,
+          1,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          -1,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1
+        ],
+        "ci": {
+          "auroc": {
+            "point": 0.9816322925155724,
+            "ci95": [
+              0.9730088338471853,
+              0.9888243871877634
+            ],
+            "n": 1000,
+            "samples": 1000,
+            "undefined_samples": 0,
+            "seed": 0
+          },
+          "miss_rate": {
+            "point": 0.03622250970245795,
+            "ci95": [
+              0.0243574168797954,
+              0.0503351641595278
+            ],
+            "n": 1000,
+            "samples": 1000,
+            "undefined_samples": 0,
+            "seed": 0
+          },
+          "false_alarm_rate": {
+            "point": 0.07048458149779736,
+            "ci95": [
+              0.03811678282908287,
+              0.10629760701044824
+            ],
+            "n": 1000,
+            "samples": 1000,
+            "undefined_samples": 0,
+            "seed": 0
+          },
+          "delay_steps_median": {
+            "point": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "n": 1000,
+            "samples": 1000,
+            "undefined_samples": 0,
+            "seed": 0
+          }
+        },
+        "detected_rate_by_severity": {
+          "high": 0.9583333333333334,
+          "low": 0.9708333333333333,
+          "med": 0.9541666666666667,
+          "none": 1.0
+        }
+      },
+      "confidently_wrong_recall": 1.0,
+      "diagnosis": {
+        "labels": [
+          "trust",
+          "model_error",
+          "instrument_fault",
+          "discovery"
+        ],
+        "n": 1000,
+        "accuracy": 0.504,
+        "macro_f1": 0.36538915718578724,
+        "confusion": [
+          [
+            211,
+            16,
+            0,
+            0
+          ],
+          [
+            0,
+            293,
+            0,
+            0
+          ],
+          [
+            13,
+            227,
+            0,
+            0
+          ],
+          [
+            15,
+            225,
+            0,
+            0
+          ]
+        ],
+        "recall": {
+          "trust": 0.9295154185022027,
+          "model_error": 1.0,
+          "instrument_fault": 0.0,
+          "discovery": 0.0
+        },
+        "by_severity": {
+          "high": {
+            "n": 240,
+            "accuracy": 0.3333333333333333,
+            "macro_f1": 0.17204301075268816,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                80,
+                0,
+                0
+              ],
+              [
+                8,
+                72,
+                0,
+                0
+              ],
+              [
+                2,
+                78,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": 0.0,
+              "discovery": 0.0
+            }
+          },
+          "low": {
+            "n": 240,
+            "accuracy": 0.3333333333333333,
+            "macro_f1": 0.1703940362087327,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                80,
+                0,
+                0
+              ],
+              [
+                1,
+                79,
+                0,
+                0
+              ],
+              [
+                6,
+                74,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": 0.0,
+              "discovery": 0.0
+            }
+          },
+          "med": {
+            "n": 240,
+            "accuracy": 0.3333333333333333,
+            "macro_f1": 0.17259978425026967,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                80,
+                0,
+                0
+              ],
+              [
+                4,
+                76,
+                0,
+                0
+              ],
+              [
+                7,
+                73,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": 0.0,
+              "discovery": 0.0
+            }
+          },
+          "none": {
+            "n": 280,
+            "accuracy": 0.9428571428571428,
+            "macro_f1": 0.9161613893255482,
+            "confusion": [
+              [
+                211,
+                16,
+                0,
+                0
+              ],
+              [
+                0,
+                53,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": 0.9295154185022027,
+              "model_error": 1.0,
+              "instrument_fault": null,
+              "discovery": null
+            }
+          }
+        },
+        "by_perturbation_subtype": {
+          "bias": {
+            "n": 40,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                40,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.0,
+              "discovery": null
+            }
+          },
+          "constant_torque": {
+            "n": 66,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                66,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": null,
+              "discovery": 0.0
+            }
+          },
+          "damping": {
+            "n": 69,
+            "accuracy": 1.0,
+            "macro_f1": 1.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                69,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": null,
+              "discovery": null
+            }
+          },
+          "drift": {
+            "n": 56,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                56,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.0,
+              "discovery": null
+            }
+          },
+          "dropout": {
+            "n": 45,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                13,
+                32,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.0,
+              "discovery": null
+            }
+          },
+          "gravity": {
+            "n": 91,
+            "accuracy": 1.0,
+            "macro_f1": 1.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                91,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": null,
+              "discovery": null
+            }
+          },
+          "impulse": {
+            "n": 54,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                15,
+                39,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": null,
+              "discovery": 0.0
+            }
+          },
+          "length": {
+            "n": 80,
+            "accuracy": 1.0,
+            "macro_f1": 1.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                80,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": null,
+              "discovery": null
+            }
+          },
+          "magnet": {
+            "n": 71,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                71,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": null,
+              "discovery": 0.0
+            }
+          },
+          "noise": {
+            "n": 41,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                41,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.0,
+              "discovery": null
+            }
+          },
+          "none": {
+            "n": 280,
+            "accuracy": 0.9428571428571428,
+            "macro_f1": 0.9161613893255482,
+            "confusion": [
+              [
+                211,
+                16,
+                0,
+                0
+              ],
+              [
+                0,
+                53,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": 0.9295154185022027,
+              "model_error": 1.0,
+              "instrument_fault": null,
+              "discovery": null
+            }
+          },
+          "periodic_drive": {
+            "n": 49,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                49,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": null,
+              "discovery": 0.0
+            }
+          },
+          "scale": {
+            "n": 36,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                36,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.0,
+              "discovery": null
+            }
+          },
+          "stuck": {
+            "n": 22,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                22,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.0,
+              "discovery": null
+            }
+          }
+        },
+        "by_regime": {
+          "gentle": {
+            "n": 470,
+            "accuracy": 0.6212765957446809,
+            "macro_f1": 0.35620254209310004,
+            "confusion": [
+              [
+                211,
+                16,
+                0,
+                0
+              ],
+              [
+                0,
+                81,
+                0,
+                0
+              ],
+              [
+                13,
+                68,
+                0,
+                0
+              ],
+              [
+                15,
+                66,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": 0.9295154185022027,
+              "model_error": 1.0,
+              "instrument_fault": 0.0,
+              "discovery": 0.0
+            }
+          },
+          "large": {
+            "n": 270,
+            "accuracy": 0.4,
+            "macro_f1": 0.19047619047619047,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                108,
+                0,
+                0
+              ],
+              [
+                0,
+                81,
+                0,
+                0
+              ],
+              [
+                0,
+                81,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": 0.0,
+              "discovery": 0.0
+            }
+          },
+          "rotating": {
+            "n": 260,
+            "accuracy": 0.4,
+            "macro_f1": 0.19047619047619047,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                104,
+                0,
+                0
+              ],
+              [
+                0,
+                78,
+                0,
+                0
+              ],
+              [
+                0,
+                78,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": 0.0,
+              "discovery": 0.0
+            }
+          }
+        },
+        "macro_f1_ci": {
+          "point": 0.36538915718578724,
+          "ci95": [
+            0.3531387174192455,
+            0.3770632753758124
+          ],
+          "n": 1000,
+          "samples": 1000,
+          "undefined_samples": 0,
+          "seed": 0
+        }
+      }
+    },
+    "oracle": {
+      "threshold": 0.00032683911262831866,
+      "detection": {
+        "n_positive": 773,
+        "n_clean": 227,
+        "auroc": 0.9818431535695357,
+        "detected": 745,
+        "miss_rate": 0.036222509702457995,
+        "delay_steps_median": 0.0,
+        "false_alarm_rate": 0.07048458149779736,
+        "pre_onset_false_alarm_rate": 0.6833333333333333,
+        "delay_steps": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          1,
+          1,
+          0,
+          -1,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          -1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          3,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          4,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          2,
+          1,
+          1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          -1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          4,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          -1,
+          1,
+          0,
+          0,
+          1,
+          -1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          -1,
+          0,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          -1,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          5,
+          0,
+          0,
+          0,
+          -1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          -1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          -1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          -1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          -1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          -1,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          1
+        ],
+        "ci": {
+          "auroc": {
+            "point": 0.9818431535695357,
+            "ci95": [
+              0.9734656433596166,
+              0.9889545201347651
+            ],
+            "n": 1000,
+            "samples": 1000,
+            "undefined_samples": 0,
+            "seed": 0
+          },
+          "miss_rate": {
+            "point": 0.03622250970245795,
+            "ci95": [
+              0.0243574168797954,
+              0.0503351641595278
+            ],
+            "n": 1000,
+            "samples": 1000,
+            "undefined_samples": 0,
+            "seed": 0
+          },
+          "false_alarm_rate": {
+            "point": 0.07048458149779736,
+            "ci95": [
+              0.03811678282908287,
+              0.10629760701044824
+            ],
+            "n": 1000,
+            "samples": 1000,
+            "undefined_samples": 0,
+            "seed": 0
+          },
+          "delay_steps_median": {
+            "point": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "n": 1000,
+            "samples": 1000,
+            "undefined_samples": 0,
+            "seed": 0
+          }
+        },
+        "detected_rate_by_severity": {
+          "high": 0.9583333333333334,
+          "low": 0.9708333333333333,
+          "med": 0.9541666666666667,
+          "none": 1.0
+        }
+      },
+      "confidently_wrong_recall": 1.0,
+      "note": "Uses true states: a ceiling for context, not a competitor."
+    },
+    "b3_majority_verdict": {
+      "diagnosis": {
+        "labels": [
+          "trust",
+          "model_error",
+          "instrument_fault",
+          "discovery"
+        ],
+        "n": 1000,
+        "accuracy": 0.293,
+        "macro_f1": 0.11330239752513535,
+        "confusion": [
+          [
+            0,
+            227,
+            0,
+            0
+          ],
+          [
+            0,
+            293,
+            0,
+            0
+          ],
+          [
+            0,
+            240,
+            0,
+            0
+          ],
+          [
+            0,
+            240,
+            0,
+            0
+          ]
+        ],
+        "recall": {
+          "trust": 0.0,
+          "model_error": 1.0,
+          "instrument_fault": 0.0,
+          "discovery": 0.0
+        },
+        "by_severity": {
+          "high": {
+            "n": 240,
+            "accuracy": 0.3333333333333333,
+            "macro_f1": 0.16666666666666666,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                80,
+                0,
+                0
+              ],
+              [
+                0,
+                80,
+                0,
+                0
+              ],
+              [
+                0,
+                80,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": 0.0,
+              "discovery": 0.0
+            }
+          },
+          "low": {
+            "n": 240,
+            "accuracy": 0.3333333333333333,
+            "macro_f1": 0.16666666666666666,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                80,
+                0,
+                0
+              ],
+              [
+                0,
+                80,
+                0,
+                0
+              ],
+              [
+                0,
+                80,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": 0.0,
+              "discovery": 0.0
+            }
+          },
+          "med": {
+            "n": 240,
+            "accuracy": 0.3333333333333333,
+            "macro_f1": 0.16666666666666666,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                80,
+                0,
+                0
+              ],
+              [
+                0,
+                80,
+                0,
+                0
+              ],
+              [
+                0,
+                80,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": 0.0,
+              "discovery": 0.0
+            }
+          },
+          "none": {
+            "n": 280,
+            "accuracy": 0.18928571428571428,
+            "macro_f1": 0.15915915915915915,
+            "confusion": [
+              [
+                0,
+                227,
+                0,
+                0
+              ],
+              [
+                0,
+                53,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": 0.0,
+              "model_error": 1.0,
+              "instrument_fault": null,
+              "discovery": null
+            }
+          }
+        },
+        "by_perturbation_subtype": {
+          "bias": {
+            "n": 40,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                40,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.0,
+              "discovery": null
+            }
+          },
+          "constant_torque": {
+            "n": 66,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                66,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": null,
+              "discovery": 0.0
+            }
+          },
+          "damping": {
+            "n": 69,
+            "accuracy": 1.0,
+            "macro_f1": 1.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                69,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": null,
+              "discovery": null
+            }
+          },
+          "drift": {
+            "n": 56,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                56,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.0,
+              "discovery": null
+            }
+          },
+          "dropout": {
+            "n": 45,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                45,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.0,
+              "discovery": null
+            }
+          },
+          "gravity": {
+            "n": 91,
+            "accuracy": 1.0,
+            "macro_f1": 1.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                91,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": null,
+              "discovery": null
+            }
+          },
+          "impulse": {
+            "n": 54,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                54,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": null,
+              "discovery": 0.0
+            }
+          },
+          "length": {
+            "n": 80,
+            "accuracy": 1.0,
+            "macro_f1": 1.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                80,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": null,
+              "discovery": null
+            }
+          },
+          "magnet": {
+            "n": 71,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                71,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": null,
+              "discovery": 0.0
+            }
+          },
+          "noise": {
+            "n": 41,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                41,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.0,
+              "discovery": null
+            }
+          },
+          "none": {
+            "n": 280,
+            "accuracy": 0.18928571428571428,
+            "macro_f1": 0.15915915915915915,
+            "confusion": [
+              [
+                0,
+                227,
+                0,
+                0
+              ],
+              [
+                0,
+                53,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": 0.0,
+              "model_error": 1.0,
+              "instrument_fault": null,
+              "discovery": null
+            }
+          },
+          "periodic_drive": {
+            "n": 49,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                49,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": null,
+              "discovery": 0.0
+            }
+          },
+          "scale": {
+            "n": 36,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                36,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.0,
+              "discovery": null
+            }
+          },
+          "stuck": {
+            "n": 22,
+            "accuracy": 0.0,
+            "macro_f1": 0.0,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                22,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": null,
+              "instrument_fault": 0.0,
+              "discovery": null
+            }
+          }
+        },
+        "by_regime": {
+          "gentle": {
+            "n": 470,
+            "accuracy": 0.1723404255319149,
+            "macro_f1": 0.073502722323049,
+            "confusion": [
+              [
+                0,
+                227,
+                0,
+                0
+              ],
+              [
+                0,
+                81,
+                0,
+                0
+              ],
+              [
+                0,
+                81,
+                0,
+                0
+              ],
+              [
+                0,
+                81,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": 0.0,
+              "model_error": 1.0,
+              "instrument_fault": 0.0,
+              "discovery": 0.0
+            }
+          },
+          "large": {
+            "n": 270,
+            "accuracy": 0.4,
+            "macro_f1": 0.19047619047619047,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                108,
+                0,
+                0
+              ],
+              [
+                0,
+                81,
+                0,
+                0
+              ],
+              [
+                0,
+                81,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": 0.0,
+              "discovery": 0.0
+            }
+          },
+          "rotating": {
+            "n": 260,
+            "accuracy": 0.4,
+            "macro_f1": 0.19047619047619047,
+            "confusion": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                104,
+                0,
+                0
+              ],
+              [
+                0,
+                78,
+                0,
+                0
+              ],
+              [
+                0,
+                78,
+                0,
+                0
+              ]
+            ],
+            "recall": {
+              "trust": null,
+              "model_error": 1.0,
+              "instrument_fault": 0.0,
+              "discovery": 0.0
+            }
+          }
+        },
+        "macro_f1_ci": {
+          "point": 0.11330239752513535,
+          "ci95": [
+            0.10474308300395258,
+            0.12235649546827794
+          ],
+          "n": 1000,
+          "samples": 1000,
+          "undefined_samples": 0,
+          "seed": 0
+        }
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 {
-  "generated_from": "results/cal_metrics.json, commit c87d0ff, model 3e2118e1",
+  "generated_from": "results/test_metrics.json, commit edc0d7a, model 3e2118e1",
   "is_demo_data": false,
-  "split": "cal",
+  "split": "test",
   "meters": {
     "ai_confidence": "2^(-ensemble spread / B1 alarm threshold): 50% at B1's alarm line",
     "referee_score": "1 - 2^(-referee score / referee alarm threshold): 50% at its alarm line"
@@ -12,7 +12,7 @@
       "title": "Normal swing",
       "file": "normal-swing.json",
       "expected_verdict": "trust",
-      "selection_rule": "median peak referee score among 136 cal runs (gentle, clean); ties: lowest id",
+      "selection_rule": "median peak referee score among 227 test runs (gentle, clean); ties: lowest id",
       "missed": false
     },
     {
@@ -20,7 +20,7 @@
       "title": "Big swing",
       "file": "big-swing.json",
       "expected_verdict": "model_error",
-      "selection_rule": "median referee detection delay among 16 cal runs (large, clean); ties: lowest id",
+      "selection_rule": "median referee detection delay among 27 test runs (large, clean); ties: lowest id",
       "missed": false
     },
     {
@@ -28,7 +28,7 @@
       "title": "Longer string",
       "file": "longer-string.json",
       "expected_verdict": "model_error",
-      "selection_rule": "median referee detection delay among 20 cal runs (gentle, length, all severities); ties: lowest id",
+      "selection_rule": "median referee detection delay among 25 test runs (gentle, length, all severities); ties: lowest id",
       "missed": false
     },
     {
@@ -36,7 +36,7 @@
       "title": "Broken sensor",
       "file": "broken-sensor.json",
       "expected_verdict": "instrument_fault",
-      "selection_rule": "median referee detection delay among 5 cal runs (gentle, stuck, all severities); ties: lowest id",
+      "selection_rule": "median referee detection delay among 9 test runs (gentle, stuck, all severities); ties: lowest id",
       "missed": false
     },
     {
@@ -44,7 +44,7 @@
       "title": "Drifting sensor",
       "file": "drifting-sensor.json",
       "expected_verdict": "instrument_fault",
-      "selection_rule": "median referee detection delay among 4 cal runs (gentle, drift, all severities); ties: lowest id",
+      "selection_rule": "median referee detection delay among 20 test runs (gentle, drift, all severities); ties: lowest id",
       "missed": false
     },
     {
@@ -52,7 +52,7 @@
       "title": "Hidden magnet",
       "file": "hidden-magnet.json",
       "expected_verdict": "discovery",
-      "selection_rule": "median referee detection delay among 15 cal runs (gentle, magnet, all severities); ties: lowest id",
+      "selection_rule": "median referee detection delay among 23 test runs (gentle, magnet, all severities); ties: lowest id",
       "missed": false
     },
     {
@@ -60,7 +60,7 @@
       "title": "Sudden kick",
       "file": "sudden-kick.json",
       "expected_verdict": "discovery",
-      "selection_rule": "median referee detection delay among 11 cal runs (gentle, impulse, all severities); ties: lowest id",
+      "selection_rule": "median referee detection delay among 22 test runs (gentle, impulse, all severities); ties: lowest id",
       "missed": false
     },
     {
@@ -68,7 +68,7 @@
       "title": "Dropout (missed)",
       "file": "honest-miss.json",
       "expected_verdict": "instrument_fault",
-      "selection_rule": "median onset among 19 faulty cal runs the referee never flagged",
+      "selection_rule": "median onset among 28 faulty test runs the referee never flagged",
       "missed": true
     }
   ]
