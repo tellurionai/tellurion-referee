@@ -1,0 +1,62 @@
+{
+  "generated_from": "demo/scripts/make_demo_replays.py (stand-in AI + referee, not real results)",
+  "is_demo_data": true,
+  "scenarios": [
+    {
+      "id": "normal-swing",
+      "title": "Normal swing",
+      "file": "normal-swing.json",
+      "expected_verdict": "trust",
+      "missed": false,
+      "selection_rule": "DEMO DATA: fixed seed 3, onset step 80; not selected from results"
+    },
+    {
+      "id": "big-swing",
+      "title": "Big swing",
+      "file": "big-swing.json",
+      "expected_verdict": "model_error",
+      "missed": false,
+      "selection_rule": "DEMO DATA: fixed seed 3, onset step 80; not selected from results"
+    },
+    {
+      "id": "longer-string",
+      "title": "Longer string",
+      "file": "longer-string.json",
+      "expected_verdict": "model_error",
+      "missed": false,
+      "selection_rule": "DEMO DATA: fixed seed 3, onset step 80; not selected from results"
+    },
+    {
+      "id": "broken-sensor",
+      "title": "Broken sensor",
+      "file": "broken-sensor.json",
+      "expected_verdict": "instrument_fault",
+      "missed": false,
+      "selection_rule": "DEMO DATA: fixed seed 3, onset step 80; not selected from results"
+    },
+    {
+      "id": "hidden-magnet",
+      "title": "Hidden magnet",
+      "file": "hidden-magnet.json",
+      "expected_verdict": "discovery",
+      "missed": false,
+      "selection_rule": "DEMO DATA: fixed seed 3, onset step 80; not selected from results"
+    },
+    {
+      "id": "sudden-kick",
+      "title": "Sudden kick",
+      "file": "sudden-kick.json",
+      "expected_verdict": "discovery",
+      "missed": false,
+      "selection_rule": "DEMO DATA: fixed seed 3, onset step 80; not selected from results"
+    },
+    {
+      "id": "flaky-sensor",
+      "title": "Flaky sensor (missed)",
+      "file": "flaky-sensor.json",
+      "expected_verdict": "instrument_fault",
+      "missed": true,
+      "selection_rule": "DEMO DATA: fixed seed 3, onset step 80; not selected from results"
+    }
+  ]
+}

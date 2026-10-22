@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tellurion Referee</title>
+    <meta name="description" content="A referee that catches when an AI world model is confidently wrong, and says why." />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cline x1='16' y1='3' x2='22' y2='22' stroke='%2314304f' stroke-width='2.5'/%3E%3Ccircle cx='22' cy='23' r='6' fill='%2314304f'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="demo-banner" id="demo-banner" hidden>
+      DEMO DATA: stand-in AI and referee, for building the interface. Not real results.
+    </div>
+
+    <header class="masthead">
+      <h1>Tellurion Referee</h1>
+      <p class="tagline">AI that predicts the physical world is sometimes confidently wrong. The referee catches it and says why.</p>
+    </header>
+
+    <nav class="picker" id="picker" aria-label="Scenarios"></nav>
+
+    <div class="error" id="load-error" role="alert" hidden></div>
+
+    <main class="layout">
+      <section class="stage-panel" aria-label="Pendulum">
+        <div class="scenario-head">
+          <h2 id="scenario-title">Loading…</h2>
+          <p id="scenario-description"></p>
+        </div>
+        <div class="stage-wrap">
+          <canvas id="stage" role="img" aria-label="Pendulum animation"></canvas>
+        </div>
+        <ul class="legend" aria-label="Legend">
+          <li><span class="swatch swatch-reality"></span>Reality</li>
+          <li><span class="swatch swatch-ai"></span>AI prediction</li>
+          <li><span class="swatch swatch-sensor"></span>Sensor reading</li>
+        </ul>
+        <div class="timeline" id="timeline">
+          <button class="play" id="play" type="button" aria-label="Play" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path id="play-icon" d="M8 5v14l11-7z" /></svg>
+          </button>
+          <div class="track-wrap">
+            <input id="scrub" type="range" min="0" max="200" step="0.01" value="0" aria-label="Time" disabled />
+            <div class="marks" aria-hidden="true">
+              <span class="mark mark-onset" id="mark-onset" title="Hidden switch flipped"></span>
+              <span class="mark mark-flag" id="mark-flag" title="Referee flag"></span>
+            </div>
+            <div class="mark-labels" aria-hidden="true">
+              <span id="label-onset">switch</span>
+              <span id="label-flag">flag</span>
+            </div>
+          </div>
+          <span class="clock" id="clock">0.00 s</span>
+        </div>
+        <div class="playback-options">
+          <label><input type="checkbox" id="slowmo" checked /> Slow-mo around the flag</label>
+          <span class="keys">Space: play/pause · ←/→: step</span>
+        </div>
+      </section>
+
+      <aside class="side-panel">
+        <div class="meters" id="meters">
+          <div class="meter" id="meter-ai">
+            <div class="meter-label">AI confidence</div>
+            <div class="meter-bar"><div class="meter-fill"></div></div>
+            <div class="meter-value">–</div>
+          </div>
+          <div class="meter" id="meter-ref">
+            <div class="meter-label">Referee</div>
+            <div class="meter-bar"><div class="meter-fill"></div></div>
+            <div class="meter-value">–</div>
+          </div>
+        </div>
+
+        <div class="verdict" id="verdict" aria-live="polite">
+          <div class="verdict-kicker" id="verdict-kicker">Referee</div>
+          <div class="verdict-title" id="verdict-title">Watching</div>
+          <p class="verdict-evidence" id="verdict-evidence">The AI and the sensors agree so far.</p>
+          <p class="verdict-key" id="verdict-key"></p>
+        </div>
+
+        <details class="tech">
+          <summary>Technical details</summary>
+          <dl id="tech-list"></dl>
+        </details>
+      </aside>
+    </main>
+
+    <footer class="foot">
+      <span id="provenance"></span>
+      <a href="https://github.com/tellurionai/tellurion-referee">Code and benchmark</a>
+    </footer>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
