@@ -27,6 +27,11 @@ pnpm build      # static site in demo/dist (relative paths, works from any subpa
 - Dark mode, reduced-motion support, and a layout that works on phones.
 - A **DEMO DATA** banner and watermark whenever `is_demo_data` is true.
 
+## Live site
+
+Every merge to `main` that touches `demo/` is tested and published to GitHub Pages by
+`.github/workflows/demo.yml` (https://tellurionai.github.io/tellurion-referee/).
+
 ## Replay data
 
 The format is in [REPLAY_FORMAT.md](REPLAY_FORMAT.md).
@@ -47,4 +52,3 @@ rejects any file that doesn't match the format.
 
 - Results panel (P1): needs `results/test_metrics.json` from evaluation.
 - "Break it yourself" mode (P1): needs a library of precomputed real scenarios.
-- Auto-deploy (#35) belongs to the platform team.
