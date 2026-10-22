@@ -2,6 +2,10 @@
 
 tellurion_sim/dataset.py is also allowed, because it *writes* the splits.
 If this test fails on your change, you are touching the test split somewhere you shouldn't.
+
+tests/ is not scanned: tests build small fake datasets (often with a poisoned
+"test" row to prove it is never selected) and never produce reported results.
+The guard watches the code that does: src/, scripts/, tellurion_sim/, demo/.
 """
 import re
 from pathlib import Path
@@ -11,7 +15,6 @@ ALLOWED = {
     "scripts/evaluate.py",
     "tellurion_sim/dataset.py",
     "scripts/make_stub_data.py",
-    "tests/test_no_test_leakage.py",
 }
 PATTERNS = [
     re.compile(r"""split\s*(==|=|:)\s*['"]test['"]"""),   # split="test", split == "test", split: 'test'
@@ -19,7 +22,7 @@ PATTERNS = [
     re.compile(r"""['"]test\.npz['"]|/test/|_test\.npz"""),  # test split files
     re.compile(r"""--split\s+test"""),
 ]
-SKIP_DIRS = {".git", ".venv", "venv", "node_modules", "build", "dist", "__pycache__"}
+SKIP_DIRS = {".git", ".venv", "venv", "node_modules", "build", "dist", "__pycache__", "tests"}
 
 
 def python_files():
@@ -38,3 +41,20 @@ def test_only_evaluate_loads_test_split():
             if any(pat.search(line) for pat in PATTERNS):
                 offenders.append(f"{rel}:{i}: {line.strip()}")
     assert not offenders, "Locked test split referenced outside scripts/evaluate.py:\n" + "\n".join(offenders)
+
+
+def test_guard_still_catches_leaks(tmp_path, monkeypatch):
+    """The guard must still fire on result-producing code, even with tests/ skipped."""
+    bad = tmp_path / "src" / "referee" / "sneaky.py"
+    bad.parent.mkdir(parents=True)
+    bad.write_text('data = load(split="test")\n')
+    ok = tmp_path / "tests" / "test_fixture.py"
+    ok.parent.mkdir()
+    ok.write_text('splits = ["train", "test"]\n')
+    monkeypatch.setitem(globals(), "ROOT", tmp_path)
+    try:
+        test_only_evaluate_loads_test_split()
+    except AssertionError as e:
+        assert "src/referee/sneaky.py" in str(e) and "tests/" not in str(e)
+    else:
+        raise AssertionError("guard did not catch a leak in src/")
