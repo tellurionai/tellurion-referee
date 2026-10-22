@@ -36,17 +36,14 @@ Every merge to `main` that touches `demo/` is tested and published to GitHub Pag
 
 The format is in [REPLAY_FORMAT.md](REPLAY_FORMAT.md).
 
-The files in `public/replays/` are currently **DEMO DATA**. They come from
-`scripts/make_demo_replays.py`, using real `tellurion_sim` physics but a stand-in AI
-(a linearised pendulum) and a stand-in referee. They exist only to build the interface:
+The files in `public/replays/` are **real results**: the shared world model and the referee
+on the evaluation split, exported by `scripts/export_replays.py` (`make replays`, or
+`make replays SPLIT=test` after the locked test). Every scenario is picked by a stated rule
+(the median case of its kind), never by whether the referee got it right, so some verdicts
+are wrong and one run is an honest miss. The answer key is shown beside each verdict.
 
-```bash
-uv run --with-requirements requirements.txt python demo/scripts/make_demo_replays.py   # from the repo root
-```
-
-The real replays come from `scripts/export_replays.py` (#39, T41), which overwrites
-this folder with `is_demo_data: false`. No code changes are needed; the validator
-rejects any file that doesn't match the format.
+`scripts/make_demo_replays.py` still generates the old stand-in **DEMO DATA** (a stand-in AI
+and a referee that copies the answer key), for UI work only. Never publish it.
 
 ## Not done yet
 

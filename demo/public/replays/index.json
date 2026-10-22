@@ -1,62 +1,75 @@
 {
-  "generated_from": "demo/scripts/make_demo_replays.py (stand-in AI + referee, not real results)",
-  "is_demo_data": true,
+  "generated_from": "results/cal_metrics.json, commit c87d0ff, model 3e2118e1",
+  "is_demo_data": false,
+  "split": "cal",
+  "meters": {
+    "ai_confidence": "2^(-ensemble spread / B1 alarm threshold): 50% at B1's alarm line",
+    "referee_score": "1 - 2^(-referee score / referee alarm threshold): 50% at its alarm line"
+  },
   "scenarios": [
     {
       "id": "normal-swing",
       "title": "Normal swing",
       "file": "normal-swing.json",
       "expected_verdict": "trust",
-      "missed": false,
-      "selection_rule": "DEMO DATA: fixed seed 3, onset step 80; not selected from results"
+      "selection_rule": "median peak referee score among 136 cal runs (gentle, clean); ties: lowest id",
+      "missed": false
     },
     {
       "id": "big-swing",
       "title": "Big swing",
       "file": "big-swing.json",
       "expected_verdict": "model_error",
-      "missed": false,
-      "selection_rule": "DEMO DATA: fixed seed 3, onset step 80; not selected from results"
+      "selection_rule": "median referee detection delay among 16 cal runs (large, clean); ties: lowest id",
+      "missed": false
     },
     {
       "id": "longer-string",
       "title": "Longer string",
       "file": "longer-string.json",
       "expected_verdict": "model_error",
-      "missed": false,
-      "selection_rule": "DEMO DATA: fixed seed 3, onset step 80; not selected from results"
+      "selection_rule": "median referee detection delay among 20 cal runs (gentle, length, all severities); ties: lowest id",
+      "missed": false
     },
     {
       "id": "broken-sensor",
       "title": "Broken sensor",
       "file": "broken-sensor.json",
       "expected_verdict": "instrument_fault",
-      "missed": false,
-      "selection_rule": "DEMO DATA: fixed seed 3, onset step 80; not selected from results"
+      "selection_rule": "median referee detection delay among 5 cal runs (gentle, stuck, all severities); ties: lowest id",
+      "missed": false
+    },
+    {
+      "id": "drifting-sensor",
+      "title": "Drifting sensor",
+      "file": "drifting-sensor.json",
+      "expected_verdict": "instrument_fault",
+      "selection_rule": "median referee detection delay among 4 cal runs (gentle, drift, all severities); ties: lowest id",
+      "missed": false
     },
     {
       "id": "hidden-magnet",
       "title": "Hidden magnet",
       "file": "hidden-magnet.json",
       "expected_verdict": "discovery",
-      "missed": false,
-      "selection_rule": "DEMO DATA: fixed seed 3, onset step 80; not selected from results"
+      "selection_rule": "median referee detection delay among 15 cal runs (gentle, magnet, all severities); ties: lowest id",
+      "missed": false
     },
     {
       "id": "sudden-kick",
       "title": "Sudden kick",
       "file": "sudden-kick.json",
       "expected_verdict": "discovery",
-      "missed": false,
-      "selection_rule": "DEMO DATA: fixed seed 3, onset step 80; not selected from results"
+      "selection_rule": "median referee detection delay among 11 cal runs (gentle, impulse, all severities); ties: lowest id",
+      "missed": false
     },
     {
-      "id": "flaky-sensor",
-      "title": "Flaky sensor (missed)",
-      "file": "flaky-sensor.json",
+      "id": "honest-miss",
+      "title": "Dropout (missed)",
+      "file": "honest-miss.json",
       "expected_verdict": "instrument_fault",
-      "missed": true,
-      "selection_rule": "DEMO DATA: fixed seed 3, onset step 80; not selected from results"
+      "selection_rule": "median onset among 19 faulty cal runs the referee never flagged",
+      "missed": true
     }
   ]
 }

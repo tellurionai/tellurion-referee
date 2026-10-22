@@ -4,7 +4,7 @@ PY ?= python
 # the shared frozen model; override to test a local one: make eval-cal MODEL=artifacts/world_model
 MODEL ?= models/world_model
 
-.PHONY: install data train publish-model eval-cal eval-test figures test smoke lint
+.PHONY: install data train publish-model eval-cal eval-test replays figures test smoke lint
 
 install:
 	$(PY) -m pip install -e '.[dev]'
@@ -30,6 +30,11 @@ eval-cal:
 # The locked test split is evaluated ONCE, at Gate 3 (Thu 12:00 ET). Do not run this before then.
 eval-test:
 	$(PY) scripts/evaluate.py --config $(CONFIG) --split test --confirm-locked-test --model $(MODEL)
+
+# Real demo replays from the latest evaluation (SPLIT=test after Gate 3)
+SPLIT ?= cal
+replays:
+	$(PY) scripts/export_replays.py --split $(SPLIT)
 
 figures:
 	@echo "figures: not implemented yet (docs & figures). Will run: $(PY) scripts/make_figures.py --input results/test_metrics.json"
