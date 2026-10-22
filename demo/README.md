@@ -3,6 +3,7 @@
 An interactive web demo of the referee: pick a scenario, watch reality, the AI's
 prediction and the sensor reading, and see the referee flag and name the cause.
 It is a static site built with Vite + TypeScript + Canvas 2D, with no runtime dependencies.
+The plan is in [`docs/plans/plan-demo.md`](../docs/plans/plan-demo.md).
 
 ## Run locally
 

@@ -1,0 +1,35 @@
+# data and large outputs (regenerate with the Makefile)
+data/*
+!data/stub_pendulum.*
+artifacts/
+# *.npz (data/ rule covers generated data)
+*.pt
+*.ckpt
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+
+# secrets: never commit these
+.env
+.env.*
+*.pem
+*.key
+secrets*
+
+# editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# demo
+demo/node_modules/
+demo/dist/

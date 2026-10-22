@@ -1,0 +1,4 @@
+# Main config for model training, referee thresholds and evaluation.
+# Changes here affect results: maintainers must approve (see .github/CODEOWNERS).
+seed: 0
+data_dir: data/pendulum_v1
