@@ -1,7 +1,7 @@
 """Sanity report on a generated dataset: schema, split hygiene, labels, energy, period."""
+
 from __future__ import annotations
 
-import json
 import math
 from collections import Counter
 from pathlib import Path
@@ -9,29 +9,20 @@ from pathlib import Path
 import numpy as np
 
 from . import integrate
-from .perturbations import expected_verdict
+from .contract import SCHEMA, schema_errors
+from .dataset import (
+    DEV_SPLITS,
+    SPLITS,
+    _archive_errors,
+    _cross_archive_errors,
+    _load_metadata,
+    _read_archives,
+)
 from .systems import get_system
 
-# name -> (shape in symbols, dtype). N trajectories, T1 = len(times), S states, P params.
-# dtype None = any unicode string array.
-SCHEMA = {
-    "times": (("T1",), np.float64),
-    "true_states": (("N", "T1", "S"), np.float32),
-    "measured_states": (("N", "T1", "S"), np.float32),
-    "measured_mask": (("N", "T1", "S"), np.uint8),
-    "true_energy": (("N", "T1"), np.float32),
-    "nominal_params": (("N", "P"), np.float32),
-    "actual_params": (("N", "P"), np.float32),
-    "trajectory_id": (("N",), np.int64),
-    "split": (("N",), None),
-    "regime": (("N",), None),
-    "perturbation_type": (("N",), None),
-    "perturbation_subtype": (("N",), None),
-    "severity": (("N",), None),
-    "onset_step": (("N",), np.int32),
-    "expected_verdict": (("N",), None),
-}
-ENERGY_DRIFT_TOL = 1e-5   # relative; stored energy is float32
+__all__ = ["SCHEMA", "check_dataset", "schema_errors", "small_angle_period"]
+
+ENERGY_DRIFT_TOL = 1e-5  # relative; stored energy is float32
 PERIOD_TOL = 1e-3
 
 
@@ -46,85 +37,98 @@ def small_angle_period(system, dt: float = 0.01, n_steps: int = 1000, theta0: fl
     return float(np.mean(np.diff(crossings)))
 
 
-def schema_errors(ds: dict, meta: dict) -> list[str]:
-    """Exact contract shapes and dtypes, with sizes taken from metadata and the data."""
-    missing = [k for k in SCHEMA if k not in ds]
-    if missing:
-        return [f"missing {missing}"]
-    dims = {"N": len(ds["trajectory_id"]), "T1": meta["n_steps"] + 1,
-            "S": len(meta["state_names"]), "P": len(meta["param_names"])}
-    errors = []
-    for k, (sym, dtype) in SCHEMA.items():
-        want = tuple(dims[s] for s in sym)
-        if ds[k].shape != want:
-            errors.append(f"{k} shape {ds[k].shape} != {want}")
-        if (ds[k].dtype.kind != "U") if dtype is None else (ds[k].dtype != dtype):
-            errors.append(f"{k} dtype {ds[k].dtype} != {dtype or 'str'}")
-    return errors
-
-
 def check_dataset(path: str | Path, include_test: bool = False) -> tuple[bool, list[str]]:
-    """Sanity report. The locked test file is only read with ``include_test``."""
-    from .dataset import (  # local: avoids a cycle at import time
-        DEV_SPLITS,
-        SPLITS,
-        _paths,
-        load_dataset,
-    )
+    """Report shared contract diagnostics and physics checks, retaining provenance.
 
-    meta = json.loads(_paths(path)[2].read_text())
-    ds = load_dataset(path, SPLITS if include_test else DEV_SPLITS)
+    Raw archives are used here so invalid data remains available for diagnostics.
+    The public loader still rejects every contract violation before returning data.
+    """
+    try:
+        meta = _load_metadata(path)
+    except (OSError, ValueError) as error:
+        return False, [f"dataset={path}; provenance unavailable", f"[FAIL] metadata: {error}"]
+
+    archives, failures = [], []
+    try:
+        for file, allowed, part in _read_archives(path, SPLITS if include_test else DEV_SPLITS):
+            archives.append(part)
+            failures.extend(f"{file.name}: {error}" for error in _archive_errors(part, meta, allowed))
+    except (OSError, ValueError) as error:
+        failures.append(f"archive could not be read: {error}")
+    if not failures:
+        failures.extend(_cross_archive_errors(archives))
+
+    def vector(part, key):
+        value = part.get(key)
+        return value if isinstance(value, np.ndarray) and value.ndim == 1 else None
+
+    counts = [vector(part, "trajectory_id") for part in archives]
+    n = sum(len(ids) for ids in counts if ids is not None)
+    lines = [
+        (
+            f"{n} readable trajectories x {meta['n_steps'] + 1} samples, dt={meta['dt']} s, "
+            f"seed={meta.get('seed', 'unknown')}, commit={str(meta.get('git_commit', 'unknown'))[:12]}, "
+            f"test {'requested' if include_test else 'not loaded'}"
+        )
+    ]
+    lines.extend(f"[FAIL] contract: {error}" for error in failures)
+    if not failures:
+        lines.append("[PASS] contract: required arrays and shared/system invariants")
+
+    # Count whatever label vectors remain readable, even if other fields are invalid.
+    lines.append("label counts per split (type / verdict):")
+    for split in SPLITS if include_test else DEV_SPLITS:
+        total, types, verdicts = 0, Counter(), Counter()
+        for part in archives:
+            labels = vector(part, "split")
+            if labels is None or labels.dtype.kind != "U":
+                continue
+            keep = labels == split
+            total += int(keep.sum())
+            for key, counter in (("perturbation_type", types), ("expected_verdict", verdicts)):
+                values = vector(part, key)
+                if values is not None and values.dtype.kind == "U" and values.shape == labels.shape:
+                    counter.update(values[keep].tolist())
+        lines.append(f"  {split:5s} n={total:5d}  {dict(types)}  {dict(verdicts)}")
+    if failures:
+        return False, lines
+
+    ds = {
+        key: archives[0][key] if key == "times" else np.concatenate([part[key] for part in archives])
+        for key in SCHEMA
+    }
     system = get_system(meta["system"])
-    lines, ok = [], True
+    if system.name != "pendulum":
+        lines.append(f"[SKIP] physics checks: no checks defined for {system.name}")
+        return True, lines
+    ok = True
 
     def report(name, passed, detail=""):
         nonlocal ok
         ok &= bool(passed)
         lines.append(f"[{'PASS' if passed else 'FAIL'}] {name}{': ' + detail if detail else ''}")
 
-    errors = schema_errors(ds, meta)
-    report("schema", not errors, "; ".join(errors) if errors else "all 15 arrays match contract shapes/dtypes")
-    if errors:
-        return ok, lines  # later checks index into these arrays
-
-    n, t1 = ds["true_states"].shape[:2]
-    lines.insert(0, f"{n} trajectories x {t1} samples, dt={meta['dt']} s, seed={meta['seed']}, "
-                    f"commit={meta['git_commit'][:12]}, test {'included' if include_test else 'not loaded'}")
-    report("unique trajectory_id", len(np.unique(ds["trajectory_id"])) == n)
-
-    tv = np.isin(ds["split"], ["train", "val"])
-    clean_tv = np.all((ds["regime"][tv] == "gentle") & (ds["perturbation_type"][tv] == "none"))
-    report("train/val are gentle + none only", clean_tv)
-
-    want = np.array([expected_verdict(r, p) for r, p in zip(ds["regime"], ds["perturbation_type"])])
-    report("expected_verdict follows the rule", np.array_equal(want, ds["expected_verdict"]))
-
     none = ds["perturbation_type"] == "none"
-    report("onset_step = -1 iff none", np.all((ds["onset_step"] == -1) == none))
-
-    not_sf = ds["perturbation_type"] != "sensor_fault"
-    same = np.array_equal(ds["true_states"][not_sf], ds["measured_states"][not_sf]) and np.all(ds["measured_mask"][not_sf] == 1)
-    report("measured == true outside sensor_fault", same)
-    nan_ok = np.array_equal(np.isnan(ds["measured_states"]), ds["measured_mask"] == 0)
-    report("NaN exactly where mask = 0", nan_ok)
-
     # Energy drift on runs whose true physics is the ideal nominal pendulum.
-    ideal = (none | ~not_sf) & (ds["nominal_params"][:, 3] == 0)
+    damping = system.param_names.index("b")
+    ideal = (none | (ds["perturbation_type"] == "sensor_fault")) & (ds["nominal_params"][:, damping] == 0)
     e = ds["true_energy"][ideal].astype(np.float64)
     drift = np.abs(e - e[:, :1]).max(axis=1) / np.maximum(e[:, 0], 1e-3)
-    report("energy drift (ideal runs)", drift.max() < ENERGY_DRIFT_TOL,
-           f"max relative {drift.max():.2e} over {ideal.sum()} runs (tol {ENERGY_DRIFT_TOL:g})")
+    if drift.size:
+        report(
+            "energy drift (ideal runs)",
+            drift.max() < ENERGY_DRIFT_TOL,
+            f"max relative {drift.max():.2e} over {ideal.sum()} runs (tol {ENERGY_DRIFT_TOL:g})",
+        )
+    else:
+        lines.append("[SKIP] energy drift (ideal runs): no ideal trajectories")
 
     g, L = system.nominal["g"], system.nominal["L"]
     expected = 2 * math.pi * math.sqrt(L / g)
     measured = small_angle_period(system)
     err = abs(measured - expected) / expected
-    report("small-angle period", err < PERIOD_TOL, f"{measured:.5f} s vs 2π√(L/g) = {expected:.5f} s ({err:.2e})")
+    report(
+        "small-angle period", err < PERIOD_TOL, f"{measured:.5f} s vs 2π√(L/g) = {expected:.5f} s ({err:.2e})"
+    )
 
-    lines.append("label counts per split (type / verdict):")
-    for split in SPLITS if include_test else DEV_SPLITS:
-        m = ds["split"] == split
-        types = dict(Counter(ds["perturbation_type"][m].tolist()))
-        verdicts = dict(Counter(ds["expected_verdict"][m].tolist()))
-        lines.append(f"  {split:5s} n={m.sum():5d}  {types}  {verdicts}")
     return ok, lines

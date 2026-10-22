@@ -250,10 +250,9 @@ def test_train_val_load_never_opens_test(saved, monkeypatch):
 
 def test_check_rejects_malformed(saved, tmp_path):
     from tellurion_sim.check import check_dataset
-    from tellurion_sim.dataset import save_dataset
     ok, _ = check_dataset(saved)
     assert ok
-    good = load_dataset(saved, splits=("train", "val", "cal", "test"))
+    good = load_dataset(saved)
     meta = json.loads(saved.with_name("d.metadata.json").read_text())
     breakages = {
         "one state channel": lambda d: {**d, **{k: d[k][..., :1] for k in ("true_states", "measured_states", "measured_mask")}},
@@ -263,10 +262,12 @@ def test_check_rejects_malformed(saved, tmp_path):
     }
     for name, breakit in breakages.items():
         out = tmp_path / name.replace(" ", "_")
-        save_dataset(breakit(good), meta, out)
-        ok, lines = check_dataset(out, include_test=True)
+        # Bypass the validating writer to emulate an externally corrupted archive.
+        np.savez_compressed(out.with_suffix(".npz"), **breakit(good))
+        out.with_suffix(".metadata.json").write_text(json.dumps(meta))
+        ok, lines = check_dataset(out)
         assert not ok, name
-        assert any(line.startswith("[FAIL] schema") for line in lines), name
+        assert any(line.startswith("[FAIL] contract") for line in lines), name
 
 
 # --- CLI (T18) ---------------------------------------------------------------

@@ -10,6 +10,7 @@ bob at x = L sin(theta), y = -L cos(theta).
 from __future__ import annotations
 
 import math
+from typing import ClassVar
 
 import numpy as np
 
@@ -20,11 +21,28 @@ REGIMES = ("gentle", "large", "rotating")
 
 class Pendulum(System):
     name = "pendulum"
-    state_names = ["theta", "omega"]
-    state_units = ["rad", "rad/s"]
-    param_names = ["g", "L", "m", "b"]
-    param_units = ["m/s^2", "m", "kg", "N·m·s/rad"]
-    nominal = {"g": 9.81, "L": 1.0, "m": 1.0, "b": 0.0}
+    state_names: ClassVar[list[str]] = ["theta", "omega"]
+    state_units: ClassVar[list[str]] = ["rad", "rad/s"]
+    param_names: ClassVar[list[str]] = ["g", "L", "m", "b"]
+    param_units: ClassVar[list[str]] = ["m/s^2", "m", "kg", "N·m·s/rad"]
+    nominal: ClassVar[dict[str, float]] = {"g": 9.81, "L": 1.0, "m": 1.0, "b": 0.0}
+
+    def dataset_errors(self, dataset: dict) -> list[str]:
+        """Pendulum parameter bounds and the independent, healthy omega sensor."""
+        errors = []
+        positive = [self.param_names.index(name) for name in ("g", "L", "m")]
+        damping = self.param_names.index("b")
+        for key in ("nominal_params", "actual_params"):
+            if not np.all(dataset[key][:, positive] > 0):
+                errors.append(f"{key}: g, L and m must be positive")
+            if not np.all(dataset[key][:, damping] >= 0):
+                errors.append(f"{key}: damping must be nonnegative")
+        omega = self.state_names.index("omega")
+        if not np.array_equal(dataset["measured_states"][..., omega], dataset["true_states"][..., omega]):
+            errors.append("measured omega must always equal true omega")
+        if not np.all(dataset["measured_mask"][..., omega] == 1):
+            errors.append("measured omega must always be valid")
+        return errors
 
     def rhs(self, t: float, x: np.ndarray, p: np.ndarray, force_fn: ForceFn | None = None) -> np.ndarray:
         g, L, m, b = p

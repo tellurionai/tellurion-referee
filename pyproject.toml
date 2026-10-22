@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tellurion-referee"
+version = "0.0.1"
+description = "A referee that detects when a learned world model disagrees with reality, and says why."
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.11"
+dependencies = [
+  # minimum versions; any newer release works (supports Python 3.11 to 3.14)
+  "numpy>=2.1",
+  "scipy>=1.14",
+  "pyyaml>=6.0",
+  "torch>=2.5",   # the world model (src/referee/model.py) is imported by the referee
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3", "ruff>=0.7"]
+eval = ["scikit-learn>=1.5", "matplotlib>=3.9"]  # metrics and figures
+
+[tool.setuptools]
+packages = ["tellurion_sim", "tellurion_sim.systems", "referee"]
+
+[tool.setuptools.package-dir]
+referee = "src/referee"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"

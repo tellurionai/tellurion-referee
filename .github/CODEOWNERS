@@ -1,0 +1,11 @@
+# Changes to these paths need approval from a maintainer.
+# Everything else can be approved by any teammate.
+/configs/                  @tellurionai/maintainers
+/src/referee/evaluate.py   @tellurionai/maintainers
+/scripts/evaluate.py       @tellurionai/maintainers
+/.github/                  @tellurionai/maintainers
+/CLAUDE.md                 @tellurionai/maintainers
+/AGENTS.md                 @tellurionai/maintainers
+/pyproject.toml            @tellurionai/maintainers
+/Makefile                  @tellurionai/maintainers
+/tests/test_no_test_leakage.py  @tellurionai/maintainers
