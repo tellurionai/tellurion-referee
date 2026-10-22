@@ -25,6 +25,19 @@ from torch import nn
 logger = logging.getLogger(__name__)
 
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+def portable_path(path) -> str:
+    """Repo-relative POSIX path for files recorded in committed reports.
+
+    Absolute local paths would leak machine layouts and differ per machine;
+    files outside the repo are recorded by name only.
+    """
+    path = Path(path).resolve()
+    return path.relative_to(REPO_ROOT).as_posix() if path.is_relative_to(REPO_ROOT) else path.name
+
+
 def angle_difference(a, b):
     """Signed shortest angular difference in radians (NumPy arrays)."""
     return np.arctan2(np.sin(a - b), np.cos(a - b))
@@ -130,7 +143,7 @@ def load_split(path: str | Path, split: str) -> SplitData:
     if split in {"train", "val"} and (np.any(regimes != "gentle") or np.any(perturbations != "none")):
         raise ValueError("train/val must contain only gentle, unperturbed trajectories")
     return SplitData(states, mask.astype(bool), ids[indices], regimes, perturbations,
-                     times, split, metadata, str(path.resolve()))
+                     times, split, metadata, portable_path(path))
 
 
 class DynamicsModel(nn.Module):
@@ -215,7 +228,21 @@ class Ensemble:
         return tuple(mean[0, 0].tolist())
 
     def forecast_last_step(self, theta_hist, omega_hist, dt):
-        return self.forecast_step(theta_hist[-2], omega_hist[-2], dt)
+        """Forecast the window's last sample from the latest valid reading before it.
+
+        Dropped readings are NaN by contract, so roll out k steps from the last
+        finite state instead of failing. With no valid earlier reading, return NaN
+        (as StubForecaster does) and let the referee treat the window as missing.
+        """
+        if not np.isclose(dt, self.dt):
+            raise ValueError(f"Forecast dt must match training dt={self.dt}")
+        theta, omega = np.asarray(theta_hist, dtype=float), np.asarray(omega_hist, dtype=float)
+        valid = np.flatnonzero(np.isfinite(theta[:-1]) & np.isfinite(omega[:-1]))
+        if not valid.size:
+            return (float("nan"), float("nan"))
+        last = int(valid[-1])
+        mean, _ = self.forecast([[theta[last], omega[last]]], len(theta) - 1 - last)
+        return tuple(mean[0, -1].tolist())
 
 
 @dataclass(frozen=True)

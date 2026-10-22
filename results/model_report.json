@@ -1,6 +1,6 @@
 {
   "split": "cal",
-  "source": "D:\\Tellurion\\tellurion-referee\\artifacts\\datasets\\pendulum_v1\\pendulum_v1.npz",
+  "source": "artifacts/datasets/pendulum_v1/pendulum_v1.npz",
   "data_metadata": {
     "system": "pendulum",
     "state_names": [
@@ -2075,6 +2075,6 @@
       ]
     }
   },
-  "manifest": "D:\\Tellurion\\tellurion-referee\\artifacts\\world_model\\manifest.json",
+  "manifest": "artifacts/world_model/manifest.json",
   "checkpoint_hashes_verified": true
 }

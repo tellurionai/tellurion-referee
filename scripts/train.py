@@ -42,7 +42,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from referee.model import (  # noqa: E402
     TrainConfig, load_split, train_ensemble, save_ensemble, load_ensemble,
-    model_report, sha256_file, verify_checkpoints,
+    model_report, portable_path, sha256_file, verify_checkpoints,
 )
 
 
@@ -120,10 +120,14 @@ def main(argv=None):
             save_ensemble(out, ensemble, training)
             print(f"Saved frozen checkpoints to {out}", flush=True)
         report = model_report(ensemble, load_split(data_path, report_split), bootstrap_samples=bootstrap_samples)
-        report["manifest"] = str((out / "manifest.json").resolve())
+        report["manifest"] = portable_path(out / "manifest.json")
         # Recheck saved weights after reporting, including in report-only mode.
-        verify_checkpoints(out)
+        training = verify_checkpoints(out)["training"]
         report["checkpoint_hashes_verified"] = True
+        # Tie the committed numbers to the code that produced the weights.
+        report["training_code_commit"] = training.get("code_commit")
+        report["training_code_dirty"] = training.get("code_dirty")
+        report["training_data_sha256"] = training.get("data_sha256")
         report_path.parent.mkdir(parents=True, exist_ok=True)
         report_path.write_text(json.dumps(report, indent=2, allow_nan=False), encoding="utf-8")
         print(f"Wrote {report_split} model report to {report_path}")
