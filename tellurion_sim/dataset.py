@@ -16,11 +16,13 @@ import subprocess
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
+from zipfile import BadZipFile
 
 import numpy as np
 import yaml
 
-from . import integrate
+from . import contract, integrate
+from .contract import DEV_SPLITS, LOCKED_SPLIT, SCHEMA, SPLITS, validate_dataset
 from .perturbations import (
     PERTURBATION_TYPES,
     SEVERITIES,
@@ -34,10 +36,6 @@ from .perturbations import (
 )
 from .systems import get_system
 from .systems.pendulum import REGIMES
-
-SPLITS = ("train", "val", "cal", "test")
-DEV_SPLITS = ("train", "val", "cal")
-LOCKED_SPLIT = "test"
 
 
 def load_config(path: str | Path) -> dict:
@@ -200,6 +198,12 @@ def _paths(out: str | Path) -> tuple[Path, Path, Path]:
 
 def save_dataset(ds: dict, meta: dict, out: str | Path) -> tuple[Path, Path, Path]:
     """Write ``<out>.npz`` (train/val/cal), ``<out>.test.npz`` (locked test) and ``<out>.metadata.json``."""
+    validate_dataset(ds, meta)
+    for key in ds.keys() - SCHEMA.keys():
+        value = ds[key]
+        if (not isinstance(value, np.ndarray) or value.ndim == 0
+                or value.shape[0] != len(ds["trajectory_id"]) or value.dtype.hasobject):
+            raise ValueError(f"{key}: extension arrays must be non-object arrays with a leading trajectory axis")
     dev, test, js = _paths(out)
     dev.parent.mkdir(parents=True, exist_ok=True)
     is_test = ds["split"] == LOCKED_SPLIT
@@ -209,25 +213,79 @@ def save_dataset(ds: dict, meta: dict, out: str | Path) -> tuple[Path, Path, Pat
     return dev, test, js
 
 
-def load_dataset(path: str | Path, splits: tuple[str, ...] = DEV_SPLITS) -> dict:
-    """Load a dataset (``<name>`` prefix or ``<name>.npz``) as a dict of arrays.
+def _load_metadata(path: str | Path) -> dict:
+    js = _paths(path)[2]
+    try:
+        meta = json.loads(js.read_text(encoding="utf-8"))
+    except FileNotFoundError as error:
+        raise FileNotFoundError(f"required metadata file is missing: {js}") from error
+    errors = contract.metadata_errors(meta)
+    if errors:
+        raise ValueError("invalid metadata: " + "; ".join(errors))
+    return meta
 
-    Only trajectories in ``splits`` are returned. The locked test file is
-    opened only when ``"test"`` is requested, which only the final
-    evaluation should ever do.
-    """
+
+def _read_archives(path: str | Path, splits: tuple[str, ...]):
+    """Read required arrays without validating/filtering, for loader and diagnostics."""
     unknown = set(splits) - set(SPLITS)
     if unknown:
         raise ValueError(f"unknown splits {sorted(unknown)}; known: {SPLITS}")
-    dev, test, _ = _paths(path)
-    parts = []
-    for file, wanted in ((dev, set(splits) & set(DEV_SPLITS)), (test, set(splits) & {LOCKED_SPLIT})):
-        if not wanted:
-            continue
-        with np.load(file, allow_pickle=False) as z:
-            part = {k: z[k] for k in z.files}
-        keep = np.isin(part["split"], list(wanted))
-        parts.append({k: (v if k == "times" else v[keep]) for k, v in part.items()})
-    if not parts:
+    if not splits:
         raise ValueError("no splits requested")
-    return {k: (parts[0][k] if k == "times" else np.concatenate([p[k] for p in parts])) for k in parts[0]}
+    dev, test, _ = _paths(path)
+    for file, allowed in ((dev, DEV_SPLITS), (test, (LOCKED_SPLIT,))):
+        if not set(splits).intersection(allowed):
+            continue
+        try:
+            with np.load(file, allow_pickle=False) as z:
+                # Additive fields are ignored without reading or unpickling their contents.
+                part = {key: z[key] for key in SCHEMA if key in z.files}
+        except (OSError, ValueError, BadZipFile) as error:
+            raise ValueError(f"cannot read archive {file.name}: {error}") from error
+        yield file, allowed, part
+
+
+def _archive_errors(part: dict, meta: dict, allowed: tuple[str, ...]) -> list[str]:
+    errors = contract.dataset_errors(part, meta)
+    labels = part.get("split")
+    if isinstance(labels, np.ndarray) and labels.ndim == 1 and labels.dtype.kind == "U":
+        misplaced = sorted(set(labels) - set(allowed))
+        if misplaced:
+            errors.append(f"misplaced splits {misplaced}; expected only {allowed}")
+    return errors
+
+
+def _cross_archive_errors(parts: list[dict]) -> list[str]:
+    """Only the invariants that combining separately validated archives can break."""
+    errors = []
+    if any(not np.array_equal(parts[0]["times"], part["times"]) for part in parts[1:]):
+        errors.append("dataset archives have different time grids")
+    if len(parts) > 1:
+        ids = np.concatenate([part["trajectory_id"] for part in parts])
+        if len(np.unique(ids)) != len(ids):
+            errors.append("trajectory_id must be unique across dataset archives")
+    return errors
+
+
+def load_dataset(path: str | Path, splits: tuple[str, ...] = DEV_SPLITS) -> dict:
+    """Load and validate each requested archive once, then select trajectories.
+
+    Metadata is required. Unknown arrays are ignored. Only explicitly requesting
+    ``test`` opens the locked archive; that is reserved for the final evaluation.
+    """
+    meta = _load_metadata(path)
+    parts = []
+    for file, allowed, part in _read_archives(path, splits):
+        errors = _archive_errors(part, meta, allowed)
+        if errors:
+            raise ValueError(f"invalid dataset {file.name}: " + "; ".join(errors))
+        parts.append(part)
+    errors = _cross_archive_errors(parts)
+    if errors:
+        raise ValueError("invalid dataset: " + "; ".join(errors))
+    selected = []
+    for part in parts:
+        keep = np.isin(part["split"], splits)
+        selected.append({key: value if key == "times" else value[keep] for key, value in part.items()})
+    return {key: selected[0][key] if key == "times" else np.concatenate([part[key] for part in selected])
+            for key in SCHEMA}

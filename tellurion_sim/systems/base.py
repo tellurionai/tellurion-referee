@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from typing import ClassVar
 
 import numpy as np
 
@@ -10,15 +11,23 @@ ForceFn = Callable[[float, float, float], float]
 
 
 class System:
-    name: str
-    state_names: list[str]
-    state_units: list[str]
-    param_names: list[str]
-    param_units: list[str]
-    nominal: dict[str, float]
+    name: ClassVar[str]
+    state_names: ClassVar[list[str]]
+    state_units: ClassVar[list[str]]
+    param_names: ClassVar[list[str]]
+    param_units: ClassVar[list[str]]
+    nominal: ClassVar[dict[str, float]]
 
     def nominal_params(self) -> np.ndarray:
         return np.array([self.nominal[k] for k in self.param_names], dtype=np.float64)
+
+    def dataset_errors(self, dataset: dict) -> list[str]:
+        """System-specific invariants, called after the shared schema checks pass.
+
+        Override for physical parameter bounds and sensor-channel assumptions.
+        The base contract makes no assumptions about state or parameter order.
+        """
+        return []
 
     def rhs(self, t: float, x: np.ndarray, p: np.ndarray, force_fn: ForceFn | None = None) -> np.ndarray:
         """dx/dt."""
