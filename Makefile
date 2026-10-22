@@ -12,14 +12,14 @@ data:
 	$(PY) -m tellurion_sim check data/pendulum_v1
 
 train:
-	@echo "train: not implemented yet (model). Will run: $(PY) scripts/train.py --config $(CONFIG)"
+	$(PY) scripts/train.py --data data/pendulum_v1.npz --out artifacts/world_model
 
 eval-cal:
-	@echo "eval-cal: not implemented yet (evaluation). Will run: $(PY) scripts/evaluate.py --config $(CONFIG) --split cal"
+	$(PY) scripts/evaluate.py --config $(CONFIG) --split cal
 
 # The locked test split is evaluated ONCE, at Gate 3 (Thu 12:00 ET). Do not run this before then.
 eval-test:
-	@echo "eval-test: locked until Gate 3. Will run: $(PY) scripts/evaluate.py --config $(CONFIG) --split test"
+	$(PY) scripts/evaluate.py --config $(CONFIG) --split test --confirm-locked-test
 
 figures:
 	@echo "figures: not implemented yet (docs & figures). Will run: $(PY) scripts/make_figures.py --input results/test_metrics.json"
