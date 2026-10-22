@@ -249,3 +249,34 @@ def test_cli_missing_train_and_yaml_config(handoff, tmp_path):
         main(["--config", str(config_path), "--out", str(tmp_path / "missing")])
     assert exc.value.code == 2
     assert not (tmp_path / "missing").exists()
+
+
+def _constant_ensemble(step=0.1):
+    """Each forecast step adds `step` to theta, so k-step rollouts are exact."""
+    model = DynamicsModel((4,))
+    for p in model.parameters():
+        torch.nn.init.zeros_(p)
+    model.network[-1].bias.data[:] = torch.tensor([step, 0.0])
+    return Ensemble([model], dt=0.05)
+
+
+def test_forecast_last_step_skips_dropped_readings():
+    ensemble = _constant_ensemble()
+    theta = np.array([0.0, 0.5, 1.0, 1.2])
+    omega = np.zeros(4)
+    # Previous sample valid: one-step forecast from it, as before.
+    assert ensemble.forecast_last_step(theta, omega, 0.05)[0] == pytest.approx(1.1)
+    # Previous sample dropped (NaN): roll out two steps from the last valid one.
+    theta[2] = np.nan
+    assert ensemble.forecast_last_step(theta, omega, 0.05)[0] == pytest.approx(0.7)
+    # No valid earlier reading: NaN like StubForecaster, never an exception.
+    theta[:3] = np.nan
+    assert np.isnan(ensemble.forecast_last_step(theta, omega, 0.05)).all()
+    with pytest.raises(ValueError, match="dt"):
+        ensemble.forecast_last_step(theta, omega, 0.1)
+
+
+def test_portable_path_never_records_absolute_paths(tmp_path):
+    from referee.model import REPO_ROOT, portable_path
+    assert portable_path(REPO_ROOT / "artifacts" / "world_model" / "manifest.json") == "artifacts/world_model/manifest.json"
+    assert portable_path(tmp_path / "elsewhere" / "data.npz") == "data.npz"
