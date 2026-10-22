@@ -1,0 +1,2080 @@
+{
+  "split": "cal",
+  "source": "D:\\Tellurion\\tellurion-referee\\artifacts\\datasets\\pendulum_v1\\pendulum_v1.npz",
+  "data_metadata": {
+    "system": "pendulum",
+    "state_names": [
+      "theta",
+      "omega"
+    ],
+    "state_units": [
+      "rad",
+      "rad/s"
+    ],
+    "param_names": [
+      "g",
+      "L",
+      "m",
+      "b"
+    ],
+    "param_units": [
+      "m/s^2",
+      "m",
+      "kg",
+      "N\u00b7m\u00b7s/rad"
+    ],
+    "nominal_params": {
+      "g": 9.81,
+      "L": 1.0,
+      "m": 1.0,
+      "b": 0.0
+    },
+    "dt": 0.05,
+    "n_steps": 200,
+    "horizon_s": 10.0,
+    "solver": {
+      "method": "DOP853",
+      "rtol": 1e-09,
+      "atol": 1e-11,
+      "restart": "every grid step"
+    },
+    "seed": 0,
+    "git_commit": "86ebae939782ca1d46b94ca7d8f1ddaea8f75ed3",
+    "severity_table": {
+      "param_shift": {
+        "length": {
+          "low": 1.05,
+          "med": 1.15,
+          "high": 1.3
+        },
+        "gravity": {
+          "low": 0.95,
+          "med": 0.85,
+          "high": 0.7
+        },
+        "damping": {
+          "low": 0.05,
+          "med": 0.15,
+          "high": 0.4
+        }
+      },
+      "sensor_fault": {
+        "bias": {
+          "low": 0.03,
+          "med": 0.08,
+          "high": 0.2
+        },
+        "drift": {
+          "low": 0.03,
+          "med": 0.08,
+          "high": 0.2
+        },
+        "noise": {
+          "low": 0.01,
+          "med": 0.03,
+          "high": 0.08
+        },
+        "scale": {
+          "low": 0.03,
+          "med": 0.1,
+          "high": 0.25
+        },
+        "stuck": {
+          "low": 1,
+          "med": 1,
+          "high": 1
+        },
+        "dropout": {
+          "low": 0.05,
+          "med": 0.2,
+          "high": 0.5
+        }
+      },
+      "unseen_force": {
+        "constant_torque": {
+          "low": 0.2,
+          "med": 0.5,
+          "high": 1.0
+        },
+        "magnet": {
+          "low": 0.5,
+          "med": 1.5,
+          "high": 3.0
+        },
+        "periodic_drive": {
+          "low": 0.3,
+          "med": 0.8,
+          "high": 2.0
+        },
+        "impulse": {
+          "low": 0.3,
+          "med": 0.8,
+          "high": 2.0
+        }
+      }
+    },
+    "magnet_phi_m": 1.2,
+    "periodic_drive_w": 2.5,
+    "onset": {
+      "min": 40,
+      "max": 120
+    },
+    "split_sizes": {
+      "train": 2000,
+      "val": 400,
+      "cal": 600,
+      "test": 1000
+    },
+    "clean_gentle_frac": 0.2,
+    "split_rules": "train/val: gentle + none only. cal/test: clean gentle share plus regime x type x severity cycle. Split by trajectory_id. test is locked.",
+    "sensor_model": "theta and omega both measured; sensor faults corrupt theta only",
+    "verdict_rule": "none -> trust in gentle, model_error otherwise; param_shift -> model_error; sensor_fault -> instrument_fault; unseen_force -> discovery",
+    "generated_at": "2026-10-22T01:07:16+00:00",
+    "files": {
+      "dev": "pendulum_v1.npz",
+      "test": "pendulum_v1.test.npz"
+    }
+  },
+  "dt": 0.05,
+  "threshold": 0.25,
+  "sustained_steps": 3,
+  "error_definition": "L2([wrapped angle error, omega error] / train state std)",
+  "state_scale": [
+    0.26835155487060547,
+    0.8355359435081482
+  ],
+  "selection": "perturbation_type == none, per regime",
+  "horizon_definition": "First step of sustained crossing; uncrossed horizons capped at last contiguous observation",
+  "aggregation": "Equal trajectory weight; capped horizon medians are lower bounds when censored",
+  "bootstrap": {
+    "unit": "trajectory",
+    "samples": 1000,
+    "seed": 0,
+    "confidence": 0.95
+  },
+  "checkpoint_sha256": [
+    "3e2118e1c16b8c2643e89332d21c3d9b497b8f645d2d2862bf1d79c62eaf01c7",
+    "a9653dae65701cad090f58c66d8f7391f5ddcf4b43789aeef49e28db84b1a1b1",
+    "21e9ea552183bd56f0b73e1e855075454d33fb94046b5723aa8350519b756895",
+    "3ebc2f345a20c486b2dde833b9ecc6c0a3ad943e8ff38744b723fd58d89af1d0",
+    "97a6f8ae435021df75f54275d376dfabc015dc05006a9e959d549f7a77a1302b"
+  ],
+  "regimes": {
+    "gentle": {
+      "status": "measured",
+      "n_trajectories": 136,
+      "n_transitions": 27200,
+      "one_step_normalized_rmse": 0.0001355652228705715,
+      "one_step_normalized_rmse_ci95": [
+        0.00010954195205514449,
+        0.00016290037023343216
+      ],
+      "one_step_angle_rmse_rad": 2.3221432245405857e-05,
+      "one_step_omega_rmse_rad_s": 8.719193479910077e-05,
+      "reliability_horizon_steps_median": 200.0,
+      "reliability_horizon_seconds_median": 10.0,
+      "reliability_horizon_steps_ci95": [
+        200.0,
+        200.0
+      ],
+      "n_horizon_trajectories": 136,
+      "n_right_censored": 136,
+      "trajectories": [
+        {
+          "trajectory_id": 2408,
+          "one_step_normalized_mse": 3.1911528708405967e-07,
+          "angle_mse": 9.354285346319102e-09,
+          "omega_mse": 1.3209643157097162e-07,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2409,
+          "one_step_normalized_mse": 4.524716157305875e-09,
+          "angle_mse": 1.6791812385008598e-10,
+          "omega_mse": 1.5309267187291198e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2411,
+          "one_step_normalized_mse": 4.267035169647215e-09,
+          "angle_mse": 1.6018525395011807e-10,
+          "omega_mse": 1.426000206805611e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2418,
+          "one_step_normalized_mse": 6.1029314935012735e-09,
+          "angle_mse": 1.5597398372868554e-10,
+          "omega_mse": 2.748502092586591e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2420,
+          "one_step_normalized_mse": 4.727405578108801e-09,
+          "angle_mse": 1.2802410520595942e-10,
+          "omega_mse": 2.059177939273127e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2423,
+          "one_step_normalized_mse": 4.547720422465318e-09,
+          "angle_mse": 1.6858027473976023e-10,
+          "omega_mse": 1.5405671183188474e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2428,
+          "one_step_normalized_mse": 5.778900913355756e-09,
+          "angle_mse": 1.3278196597799052e-10,
+          "omega_mse": 2.7471229735454017e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2436,
+          "one_step_normalized_mse": 4.1204350509360665e-07,
+          "angle_mse": 1.1969900626240815e-08,
+          "omega_mse": 1.7161464427317696e-07,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2440,
+          "one_step_normalized_mse": 1.2331056176151378e-08,
+          "angle_mse": 2.6026708566107004e-10,
+          "omega_mse": 6.0854210559568855e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2443,
+          "one_step_normalized_mse": 4.7285642068573e-09,
+          "angle_mse": 1.2384823722122462e-10,
+          "omega_mse": 2.1004697980941955e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2444,
+          "one_step_normalized_mse": 4.619491011936816e-09,
+          "angle_mse": 1.569570445836277e-10,
+          "omega_mse": 1.7033520149922765e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2452,
+          "one_step_normalized_mse": 4.721045776534538e-09,
+          "angle_mse": 1.268024296674497e-10,
+          "omega_mse": 2.0665811284459323e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2454,
+          "one_step_normalized_mse": 9.723533977989973e-09,
+          "angle_mse": 2.2274797284449477e-10,
+          "omega_mse": 4.628782690474509e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2455,
+          "one_step_normalized_mse": 6.388613638108609e-09,
+          "angle_mse": 1.665613758028428e-10,
+          "omega_mse": 2.845303770371288e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2466,
+          "one_step_normalized_mse": 9.451422755546446e-09,
+          "angle_mse": 2.2397231291826358e-10,
+          "omega_mse": 4.4269468091329145e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2469,
+          "one_step_normalized_mse": 3.0329967870557084e-08,
+          "angle_mse": 9.634629760668645e-10,
+          "omega_mse": 1.1833747315392884e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2473,
+          "one_step_normalized_mse": 2.6851271428540713e-08,
+          "angle_mse": 8.759079017650606e-10,
+          "omega_mse": 1.0253994986442194e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2476,
+          "one_step_normalized_mse": 9.792609390046891e-09,
+          "angle_mse": 2.2502374963373484e-10,
+          "omega_mse": 4.6549426535591465e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2483,
+          "one_step_normalized_mse": 2.6702668520783845e-08,
+          "angle_mse": 8.710767662734042e-10,
+          "omega_mse": 1.0197086730556748e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2484,
+          "one_step_normalized_mse": 4.695951183464331e-09,
+          "angle_mse": 1.3170510515525535e-10,
+          "omega_mse": 2.0015336055223543e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2488,
+          "one_step_normalized_mse": 3.882494681306525e-08,
+          "angle_mse": 1.2293298601306901e-09,
+          "omega_mse": 1.5186838453473683e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2492,
+          "one_step_normalized_mse": 6.487600234805768e-09,
+          "angle_mse": 1.71276048899216e-10,
+          "omega_mse": 2.868702608793683e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2497,
+          "one_step_normalized_mse": 4.488692795234783e-08,
+          "angle_mse": 1.342486899424955e-09,
+          "omega_mse": 1.8321840045132376e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2498,
+          "one_step_normalized_mse": 1.4804893311293199e-08,
+          "angle_mse": 3.297282447078942e-10,
+          "omega_mse": 7.139070667960823e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2516,
+          "one_step_normalized_mse": 3.91050525294645e-09,
+          "angle_mse": 1.370300817260528e-10,
+          "omega_mse": 1.4015750782192526e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2517,
+          "one_step_normalized_mse": 2.745883875832078e-08,
+          "angle_mse": 9.248884436097171e-10,
+          "omega_mse": 1.0203311973100426e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2518,
+          "one_step_normalized_mse": 5.382590817504251e-09,
+          "angle_mse": 1.1440492997394358e-10,
+          "omega_mse": 2.648606223232264e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2524,
+          "one_step_normalized_mse": 5.821128912231188e-09,
+          "angle_mse": 1.4352892485636204e-10,
+          "omega_mse": 2.6724171764413995e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2526,
+          "one_step_normalized_mse": 9.838515779847512e-09,
+          "angle_mse": 2.2908029639889804e-10,
+          "omega_mse": 4.647666251855753e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2527,
+          "one_step_normalized_mse": 4.479268067569819e-09,
+          "angle_mse": 1.6794238222317404e-10,
+          "omega_mse": 1.4989631758055566e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2528,
+          "one_step_normalized_mse": 2.7529168278306315e-08,
+          "angle_mse": 8.925596928222035e-10,
+          "omega_mse": 1.0565818442387354e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2529,
+          "one_step_normalized_mse": 4.06130524766013e-08,
+          "angle_mse": 1.2711396379927464e-09,
+          "omega_mse": 1.6029831684249984e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2535,
+          "one_step_normalized_mse": 5.32940003239446e-09,
+          "angle_mse": 1.1218902890020033e-10,
+          "omega_mse": 2.6329545210757033e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2536,
+          "one_step_normalized_mse": 3.8495553411621586e-09,
+          "angle_mse": 1.3200168735849616e-10,
+          "omega_mse": 1.4077721210981053e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2540,
+          "one_step_normalized_mse": 5.416785686662706e-09,
+          "angle_mse": 1.1479083655840938e-10,
+          "omega_mse": 2.668737231203977e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2546,
+          "one_step_normalized_mse": 2.9842033288929315e-09,
+          "angle_mse": 6.404547725491483e-11,
+          "omega_mse": 1.4624490507486598e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2550,
+          "one_step_normalized_mse": 5.454787732617206e-09,
+          "angle_mse": 1.1754791584550617e-10,
+          "omega_mse": 2.668538501282569e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2552,
+          "one_step_normalized_mse": 1.727218723601709e-08,
+          "angle_mse": 4.0712563875722196e-10,
+          "omega_mse": 8.111215699102559e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2556,
+          "one_step_normalized_mse": 2.2764442775269345e-08,
+          "angle_mse": 7.608785823620678e-10,
+          "omega_mse": 8.516039429196098e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2561,
+          "one_step_normalized_mse": 4.410951603972535e-08,
+          "angle_mse": 1.3829692946387695e-09,
+          "omega_mse": 1.738665567074804e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2565,
+          "one_step_normalized_mse": 5.559597671123129e-09,
+          "angle_mse": 1.2571105267866756e-10,
+          "omega_mse": 2.6625719407036286e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2568,
+          "one_step_normalized_mse": 6.168110022741757e-09,
+          "angle_mse": 1.573252084163812e-10,
+          "omega_mse": 2.7809059499617206e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2573,
+          "one_step_normalized_mse": 4.4203005700182985e-08,
+          "angle_mse": 1.3266117093735375e-09,
+          "omega_mse": 1.79982801995493e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2577,
+          "one_step_normalized_mse": 6.433733545918585e-09,
+          "angle_mse": 1.6780045408726352e-10,
+          "omega_mse": 2.8647908489887186e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2581,
+          "one_step_normalized_mse": 5.899932098429872e-09,
+          "angle_mse": 1.4146298021877612e-10,
+          "omega_mse": 2.747459815211073e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2583,
+          "one_step_normalized_mse": 2.6892411852941223e-08,
+          "angle_mse": 8.817082064460635e-10,
+          "omega_mse": 1.0226484548070403e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2584,
+          "one_step_normalized_mse": 1.542056971004513e-08,
+          "angle_mse": 3.3901068063890705e-10,
+          "omega_mse": 7.478900165835967e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2598,
+          "one_step_normalized_mse": 5.4823332540365755e-09,
+          "angle_mse": 1.1677478428673282e-10,
+          "omega_mse": 2.695263567886741e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2611,
+          "one_step_normalized_mse": 4.444185464080874e-09,
+          "angle_mse": 1.6652582091047918e-10,
+          "omega_mse": 1.488204448563124e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2613,
+          "one_step_normalized_mse": 4.630743344335997e-09,
+          "angle_mse": 1.4907436396427443e-10,
+          "omega_mse": 1.7876256031001958e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2618,
+          "one_step_normalized_mse": 3.90561938345968e-09,
+          "angle_mse": 1.3638441764829423e-10,
+          "omega_mse": 1.4044235774335334e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2620,
+          "one_step_normalized_mse": 4.718738289000157e-09,
+          "angle_mse": 1.276470595890089e-10,
+          "omega_mse": 2.0567825220751956e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2623,
+          "one_step_normalized_mse": 1.8201381735138966e-08,
+          "angle_mse": 5.237765776655579e-10,
+          "omega_mse": 7.629041398615755e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2629,
+          "one_step_normalized_mse": 3.3586473602298383e-09,
+          "angle_mse": 9.457987865113537e-11,
+          "omega_mse": 1.4278421778257666e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2631,
+          "one_step_normalized_mse": 1.0197966027192251e-08,
+          "angle_mse": 2.355191319747263e-10,
+          "omega_mse": 4.836184785972364e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2637,
+          "one_step_normalized_mse": 2.890572048386275e-08,
+          "angle_mse": 9.245422205594878e-10,
+          "omega_mse": 1.1216764406185575e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2639,
+          "one_step_normalized_mse": 4.3085357503969135e-08,
+          "angle_mse": 1.3504498630467765e-09,
+          "omega_mse": 1.698692742024832e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2640,
+          "one_step_normalized_mse": 2.1572192920871203e-08,
+          "angle_mse": 7.092103015970963e-10,
+          "omega_mse": 8.184600552851862e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2644,
+          "one_step_normalized_mse": 6.104819316732346e-09,
+          "angle_mse": 1.5349783943907624e-10,
+          "omega_mse": 2.773825613644476e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2645,
+          "one_step_normalized_mse": 4.065146885778859e-09,
+          "angle_mse": 1.4703321893350108e-10,
+          "omega_mse": 1.4125592917579866e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2648,
+          "one_step_normalized_mse": 5.374098055455079e-09,
+          "angle_mse": 1.1286394735465777e-10,
+          "omega_mse": 2.657615683077097e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2653,
+          "one_step_normalized_mse": 4.2743980799286874e-08,
+          "angle_mse": 1.3413924415672795e-09,
+          "omega_mse": 1.68364149288891e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2657,
+          "one_step_normalized_mse": 4.425961819265467e-09,
+          "angle_mse": 1.6790535628530279e-10,
+          "omega_mse": 1.462107990235495e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2667,
+          "one_step_normalized_mse": 6.142486341786935e-08,
+          "angle_mse": 1.867247689801843e-09,
+          "omega_mse": 2.4780051788297897e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2677,
+          "one_step_normalized_mse": 1.905852364814109e-08,
+          "angle_mse": 5.532814206787862e-10,
+          "omega_mse": 7.941397761612734e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2678,
+          "one_step_normalized_mse": 3.3291474466068394e-08,
+          "angle_mse": 1.0595959665238297e-09,
+          "omega_mse": 1.2969279872265815e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2690,
+          "one_step_normalized_mse": 4.471645453918427e-08,
+          "angle_mse": 1.3798586717683747e-09,
+          "omega_mse": 1.784052727771268e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2693,
+          "one_step_normalized_mse": 4.5969796858003065e-09,
+          "angle_mse": 1.620059641993521e-10,
+          "omega_mse": 1.6386902945697557e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2696,
+          "one_step_normalized_mse": 1.5967282607221023e-08,
+          "angle_mse": 3.523187852572107e-10,
+          "omega_mse": 7.731556728174382e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2707,
+          "one_step_normalized_mse": 4.300137579349439e-09,
+          "angle_mse": 1.6098600230662896e-10,
+          "omega_mse": 1.4413465976303996e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2710,
+          "one_step_normalized_mse": 1.1404006627913077e-08,
+          "angle_mse": 2.470952609190391e-10,
+          "omega_mse": 5.565921501471394e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2713,
+          "one_step_normalized_mse": 4.601496961242901e-09,
+          "angle_mse": 1.60089219658488e-10,
+          "omega_mse": 1.6604255748120522e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2732,
+          "one_step_normalized_mse": 4.602068948145188e-09,
+          "angle_mse": 1.59199514682129e-10,
+          "omega_mse": 1.6694500226677178e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2734,
+          "one_step_normalized_mse": 4.579745915833655e-09,
+          "angle_mse": 1.6037636496601948e-10,
+          "omega_mse": 1.6424567261807965e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2739,
+          "one_step_normalized_mse": 4.400205355636899e-08,
+          "angle_mse": 1.3539989129895957e-09,
+          "omega_mse": 1.7592485690443027e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2746,
+          "one_step_normalized_mse": 9.322620897478373e-09,
+          "angle_mse": 2.2208268557477595e-10,
+          "omega_mse": 4.355346749917999e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2750,
+          "one_step_normalized_mse": 4.532697062131774e-08,
+          "angle_mse": 1.3919280172913773e-09,
+          "omega_mse": 1.8149735936390243e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2751,
+          "one_step_normalized_mse": 1.8002861423838112e-08,
+          "angle_mse": 4.6166653833168425e-10,
+          "omega_mse": 8.092572834073053e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2755,
+          "one_step_normalized_mse": 6.9359908927424385e-09,
+          "angle_mse": 1.8205680019089954e-10,
+          "omega_mse": 3.0772195902528665e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2756,
+          "one_step_normalized_mse": 4.28748681002844e-09,
+          "angle_mse": 1.6173931638441275e-10,
+          "omega_mse": 1.4252117264135222e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2764,
+          "one_step_normalized_mse": 7.47213935170521e-09,
+          "angle_mse": 1.9402199291640443e-10,
+          "omega_mse": 3.3355200823592668e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2767,
+          "one_step_normalized_mse": 4.6103285633591895e-09,
+          "angle_mse": 1.5946845233205664e-10,
+          "omega_mse": 1.6726091622842887e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2769,
+          "one_step_normalized_mse": 4.020912047764114e-09,
+          "angle_mse": 1.4459961006352273e-10,
+          "omega_mse": 1.4052702335121126e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2774,
+          "one_step_normalized_mse": 1.748916922394983e-08,
+          "angle_mse": 4.21583379317525e-10,
+          "omega_mse": 8.122537309418476e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2776,
+          "one_step_normalized_mse": 1.2214329991877548e-08,
+          "angle_mse": 2.6329233238087113e-10,
+          "omega_mse": 5.9746043667985305e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2781,
+          "one_step_normalized_mse": 4.3695617790717733e-08,
+          "angle_mse": 1.3098477857909074e-09,
+          "omega_mse": 1.7806577545798064e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2787,
+          "one_step_normalized_mse": 2.7573353378329557e-08,
+          "angle_mse": 9.071057793796911e-10,
+          "omega_mse": 1.045564879120775e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2791,
+          "one_step_normalized_mse": 1.8302404924952498e-08,
+          "angle_mse": 5.079849318967433e-10,
+          "omega_mse": 7.852658967522075e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2800,
+          "one_step_normalized_mse": 5.879279729725795e-09,
+          "angle_mse": 1.3949569277471596e-10,
+          "omega_mse": 2.7521138701303016e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2801,
+          "one_step_normalized_mse": 2.6241862016718187e-09,
+          "angle_mse": 3.3344781796840195e-11,
+          "omega_mse": 1.508739133626591e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2811,
+          "one_step_normalized_mse": 3.3014651013019147e-09,
+          "angle_mse": 8.979696847211116e-11,
+          "omega_mse": 1.4342897980412772e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2821,
+          "one_step_normalized_mse": 3.466914977323654e-09,
+          "angle_mse": 1.0300551384068157e-10,
+          "omega_mse": 1.4217443888853154e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2822,
+          "one_step_normalized_mse": 5.084380028108626e-09,
+          "angle_mse": 1.1145610823160013e-10,
+          "omega_mse": 2.469005888627862e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2824,
+          "one_step_normalized_mse": 5.414340087384062e-09,
+          "angle_mse": 1.1515514930504622e-10,
+          "omega_mse": 2.663497644661561e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2829,
+          "one_step_normalized_mse": 6.693770870924709e-09,
+          "angle_mse": 1.772990504411709e-10,
+          "omega_mse": 2.9542450707964463e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2832,
+          "one_step_normalized_mse": 4.563251110312194e-09,
+          "angle_mse": 1.6288864701508032e-10,
+          "omega_mse": 1.6065863084335774e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2839,
+          "one_step_normalized_mse": 4.424940858172022e-09,
+          "angle_mse": 1.6712516093253527e-10,
+          "omega_mse": 1.468958732431247e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2843,
+          "one_step_normalized_mse": 4.3952759654075635e-08,
+          "angle_mse": 1.3696801470786113e-09,
+          "omega_mse": 1.7406053487434292e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2847,
+          "one_step_normalized_mse": 4.7562163096870336e-09,
+          "angle_mse": 1.2633515067417278e-10,
+          "omega_mse": 2.095664530799013e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2849,
+          "one_step_normalized_mse": 4.910461814944256e-09,
+          "angle_mse": 1.1425584089952423e-10,
+          "omega_mse": 2.3204487220596093e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2852,
+          "one_step_normalized_mse": 1.5108104989280946e-08,
+          "angle_mse": 3.178811103232704e-10,
+          "omega_mse": 7.465599694000957e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2854,
+          "one_step_normalized_mse": 4.3830374885089896e-09,
+          "angle_mse": 1.6514001277556645e-10,
+          "omega_mse": 1.4589496277750413e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2860,
+          "one_step_normalized_mse": 4.437688883029978e-09,
+          "angle_mse": 1.6775983380235004e-10,
+          "omega_mse": 1.4717056462387745e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2865,
+          "one_step_normalized_mse": 3.4051281794234e-09,
+          "angle_mse": 9.861542138445145e-11,
+          "omega_mse": 1.4211692933585596e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2866,
+          "one_step_normalized_mse": 4.04941591369834e-09,
+          "angle_mse": 1.4589404684350882e-10,
+          "omega_mse": 1.412620354024341e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2877,
+          "one_step_normalized_mse": 3.929363945331943e-09,
+          "angle_mse": 1.3807069376703396e-10,
+          "omega_mse": 1.404652727465816e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2885,
+          "one_step_normalized_mse": 1.901089774491993e-08,
+          "angle_mse": 5.50621492845238e-10,
+          "omega_mse": 7.933936174708833e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2887,
+          "one_step_normalized_mse": 5.224900512246222e-09,
+          "angle_mse": 1.1177703901354974e-10,
+          "omega_mse": 2.563994794257951e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2888,
+          "one_step_normalized_mse": 5.216776344241225e-09,
+          "angle_mse": 1.1260420373915281e-10,
+          "omega_mse": 2.5503046341412983e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2892,
+          "one_step_normalized_mse": 3.1782803944224725e-08,
+          "angle_mse": 1.0561148622301175e-09,
+          "omega_mse": 1.1949794043175643e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2903,
+          "one_step_normalized_mse": 1.1908941388583116e-08,
+          "angle_mse": 2.6060129054705783e-10,
+          "omega_mse": 5.787494483655564e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2905,
+          "one_step_normalized_mse": 1.3281895583361347e-08,
+          "angle_mse": 2.84286927332289e-10,
+          "omega_mse": 6.516362560660127e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2912,
+          "one_step_normalized_mse": 5.24001286805742e-09,
+          "angle_mse": 1.132989188579181e-10,
+          "omega_mse": 2.5597914898867202e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2913,
+          "one_step_normalized_mse": 3.888567690069067e-08,
+          "angle_mse": 1.237020486044571e-09,
+          "omega_mse": 1.5154677512896342e-08,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2914,
+          "one_step_normalized_mse": 5.733115759909424e-09,
+          "angle_mse": 1.2993485454249054e-10,
+          "omega_mse": 2.7427609072816495e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2915,
+          "one_step_normalized_mse": 4.6596047020841524e-09,
+          "angle_mse": 1.374497321515733e-10,
+          "omega_mse": 1.9204684509332992e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2922,
+          "one_step_normalized_mse": 9.794368871496317e-09,
+          "angle_mse": 2.2480764472199155e-10,
+          "omega_mse": 4.658267105384084e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2923,
+          "one_step_normalized_mse": 2.5934998149068633e-08,
+          "angle_mse": 8.754847402592247e-10,
+          "omega_mse": 9.6184287201595e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2924,
+          "one_step_normalized_mse": 5.527569513219532e-09,
+          "angle_mse": 1.212681621787226e-10,
+          "omega_mse": 2.683283151228011e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2928,
+          "one_step_normalized_mse": 4.575136713924621e-09,
+          "angle_mse": 1.6478425568511312e-10,
+          "omega_mse": 1.5965074817714253e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2934,
+          "one_step_normalized_mse": 1.6519475565246466e-08,
+          "angle_mse": 3.699370532128654e-10,
+          "omega_mse": 7.946254321211654e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2942,
+          "one_step_normalized_mse": 4.65845761965511e-09,
+          "angle_mse": 1.4557366423417761e-10,
+          "omega_mse": 1.8409107571670802e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2947,
+          "one_step_normalized_mse": 7.3074311046639195e-09,
+          "angle_mse": 1.8962292847035656e-10,
+          "omega_mse": 3.2631808366545556e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2953,
+          "one_step_normalized_mse": 2.423378653304553e-08,
+          "angle_mse": 8.171944787527252e-10,
+          "omega_mse": 8.995868938654894e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2958,
+          "one_step_normalized_mse": 4.142973075715872e-09,
+          "angle_mse": 1.5206047532245748e-10,
+          "omega_mse": 1.4181545937574924e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2959,
+          "one_step_normalized_mse": 3.7455420986987065e-09,
+          "angle_mse": 1.2485093514591483e-10,
+          "omega_mse": 1.4044806428969991e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2963,
+          "one_step_normalized_mse": 4.608109893666779e-09,
+          "angle_mse": 1.48778114827941e-10,
+          "omega_mse": 1.774696389844621e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2968,
+          "one_step_normalized_mse": 4.61521532102438e-09,
+          "angle_mse": 1.5501058769906706e-10,
+          "omega_mse": 1.7192369750063108e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2976,
+          "one_step_normalized_mse": 3.5721825497603277e-09,
+          "angle_mse": 1.1138445027425448e-10,
+          "omega_mse": 1.4140048021360485e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2978,
+          "one_step_normalized_mse": 1.4585311625125996e-08,
+          "angle_mse": 3.083980015805565e-10,
+          "omega_mse": 7.192561657376473e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2982,
+          "one_step_normalized_mse": 4.8892410120515706e-09,
+          "angle_mse": 1.1381068310001297e-10,
+          "omega_mse": 2.3099491208711243e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2983,
+          "one_step_normalized_mse": 6.182392375819745e-09,
+          "angle_mse": 1.5760096006012247e-10,
+          "omega_mse": 2.788203223857977e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2987,
+          "one_step_normalized_mse": 2.3753637279355644e-08,
+          "angle_mse": 7.996397433096547e-10,
+          "omega_mse": 8.83084894098829e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2989,
+          "one_step_normalized_mse": 4.679290288578386e-09,
+          "angle_mse": 1.382195746746362e-10,
+          "omega_mse": 1.926748316449789e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2994,
+          "one_step_normalized_mse": 6.7518302060420865e-09,
+          "angle_mse": 1.7817651520868338e-10,
+          "omega_mse": 2.9862710082539934e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        },
+        {
+          "trajectory_id": 2996,
+          "one_step_normalized_mse": 5.736611186080154e-09,
+          "angle_mse": 1.3127095244147569e-10,
+          "omega_mse": 2.732248205461474e-09,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": null,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 200,
+          "right_censored": true
+        }
+      ]
+    },
+    "large": {
+      "status": "measured",
+      "n_trajectories": 16,
+      "n_transitions": 3200,
+      "one_step_normalized_rmse": 0.4438102966633168,
+      "one_step_normalized_rmse_ci95": [
+        0.41561156905197744,
+        0.46914169372262016
+      ],
+      "one_step_angle_rmse_rad": 0.09583767897692666,
+      "one_step_omega_rmse_rad_s": 0.22014796907883488,
+      "reliability_horizon_steps_median": 1.0,
+      "reliability_horizon_seconds_median": 0.05,
+      "reliability_horizon_steps_ci95": [
+        1.0,
+        2.0
+      ],
+      "n_horizon_trajectories": 16,
+      "n_right_censored": 0,
+      "trajectories": [
+        {
+          "trajectory_id": 2435,
+          "one_step_normalized_mse": 0.1788088083267212,
+          "angle_mse": 0.007637949660420418,
+          "omega_mse": 0.050784531980752945,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2453,
+          "one_step_normalized_mse": 0.1256941854953766,
+          "angle_mse": 0.0050024669617414474,
+          "omega_mse": 0.03925361484289169,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2459,
+          "one_step_normalized_mse": 0.11560875177383423,
+          "angle_mse": 0.004602290224283934,
+          "omega_mse": 0.03609226271510124,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2460,
+          "one_step_normalized_mse": 0.11363151669502258,
+          "angle_mse": 0.004545117728412151,
+          "omega_mse": 0.03526616469025612,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2482,
+          "one_step_normalized_mse": 0.22597236931324005,
+          "angle_mse": 0.010092518292367458,
+          "omega_mse": 0.05991474166512489,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2560,
+          "one_step_normalized_mse": 0.20837059617042542,
+          "angle_mse": 0.009111315943300724,
+          "omega_mse": 0.05713878199458122,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2579,
+          "one_step_normalized_mse": 0.23956246674060822,
+          "angle_mse": 0.01221898477524519,
+          "omega_mse": 0.04878740385174751,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 2,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 2,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2691,
+          "one_step_normalized_mse": 0.10606943070888519,
+          "angle_mse": 0.004209350794553757,
+          "omega_mse": 0.033241987228393555,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2702,
+          "one_step_normalized_mse": 0.25588154792785645,
+          "angle_mse": 0.01277859415858984,
+          "omega_mse": 0.054754991084337234,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 2,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 2,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2704,
+          "one_step_normalized_mse": 0.21132224798202515,
+          "angle_mse": 0.00925287976861,
+          "omega_mse": 0.05782701075077057,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2745,
+          "one_step_normalized_mse": 0.23723174631595612,
+          "angle_mse": 0.012548246420919895,
+          "omega_mse": 0.043968286365270615,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 2,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 2,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2768,
+          "one_step_normalized_mse": 0.23619632422924042,
+          "angle_mse": 0.012405655346810818,
+          "omega_mse": 0.04462776333093643,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 2,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 2,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2813,
+          "one_step_normalized_mse": 0.25511372089385986,
+          "angle_mse": 0.012674255296587944,
+          "omega_mse": 0.05523044615983963,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 2,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 2,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2945,
+          "one_step_normalized_mse": 0.19575175642967224,
+          "angle_mse": 0.008491728454828262,
+          "omega_mse": 0.054335854947566986,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2955,
+          "one_step_normalized_mse": 0.23491601645946503,
+          "angle_mse": 0.012201552279293537,
+          "omega_mse": 0.04571262001991272,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 2,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 2,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2965,
+          "one_step_normalized_mse": 0.21134978532791138,
+          "angle_mse": 0.009184865280985832,
+          "omega_mse": 0.0585055910050869,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        }
+      ]
+    },
+    "rotating": {
+      "status": "measured",
+      "n_trajectories": 16,
+      "n_transitions": 3200,
+      "one_step_normalized_rmse": 0.827925435347998,
+      "one_step_normalized_rmse_ci95": [
+        0.7936182025401345,
+        0.8546596949016391
+      ],
+      "one_step_angle_rmse_rad": 0.21110498023682042,
+      "one_step_omega_rmse_rad_s": 0.2156359172861295,
+      "reliability_horizon_steps_median": 1.0,
+      "reliability_horizon_seconds_median": 0.05,
+      "reliability_horizon_steps_ci95": [
+        1.0,
+        1.0
+      ],
+      "n_horizon_trajectories": 16,
+      "n_right_censored": 0,
+      "trajectories": [
+        {
+          "trajectory_id": 2485,
+          "one_step_normalized_mse": 0.8057119846343994,
+          "angle_mse": 0.052877914160490036,
+          "omega_mse": 0.04986300319433212,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2507,
+          "one_step_normalized_mse": 0.6284689903259277,
+          "angle_mse": 0.04026615619659424,
+          "omega_mse": 0.048389777541160583,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2508,
+          "one_step_normalized_mse": 0.4797373116016388,
+          "angle_mse": 0.030188046395778656,
+          "omega_mse": 0.04225863143801689,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2531,
+          "one_step_normalized_mse": 0.8298566937446594,
+          "angle_mse": 0.0550285279750824,
+          "omega_mse": 0.04586982727050781,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2538,
+          "one_step_normalized_mse": 0.6181384921073914,
+          "angle_mse": 0.04002196341753006,
+          "omega_mse": 0.043545112013816833,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2549,
+          "one_step_normalized_mse": 0.7350682616233826,
+          "angle_mse": 0.0482022650539875,
+          "omega_mse": 0.04587286338210106,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2554,
+          "one_step_normalized_mse": 0.7671247720718384,
+          "angle_mse": 0.050180140882730484,
+          "omega_mse": 0.049077872186899185,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2557,
+          "one_step_normalized_mse": 0.7126823663711548,
+          "angle_mse": 0.04619905352592468,
+          "omega_mse": 0.04966482147574425,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2748,
+          "one_step_normalized_mse": 0.7136384844779968,
+          "angle_mse": 0.04677794501185417,
+          "omega_mse": 0.04472021758556366,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2761,
+          "one_step_normalized_mse": 0.6837760806083679,
+          "angle_mse": 0.04433233663439751,
+          "omega_mse": 0.04758145660161972,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2775,
+          "one_step_normalized_mse": 0.6754371523857117,
+          "angle_mse": 0.0440354198217392,
+          "omega_mse": 0.04463834688067436,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2788,
+          "one_step_normalized_mse": 0.7031090259552002,
+          "angle_mse": 0.04559832438826561,
+          "omega_mse": 0.04880518093705177,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2834,
+          "one_step_normalized_mse": 0.6777530908584595,
+          "angle_mse": 0.043799713253974915,
+          "omega_mse": 0.04854019731283188,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2868,
+          "one_step_normalized_mse": 0.38951072096824646,
+          "angle_mse": 0.02379593811929226,
+          "omega_mse": 0.04123739153146744,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2878,
+          "one_step_normalized_mse": 0.7729651927947998,
+          "angle_mse": 0.05060300976037979,
+          "omega_mse": 0.049055565148591995,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        },
+        {
+          "trajectory_id": 2886,
+          "one_step_normalized_mse": 0.7743898034095764,
+          "angle_mse": 0.051138248294591904,
+          "omega_mse": 0.0448613166809082,
+          "n_transitions": 200,
+          "first_sustained_crossing_step": 1,
+          "observed_horizon_steps": 200,
+          "reliability_horizon_steps": 1,
+          "right_censored": false
+        }
+      ]
+    }
+  },
+  "manifest": "D:\\Tellurion\\tellurion-referee\\artifacts\\world_model\\manifest.json",
+  "checkpoint_hashes_verified": true
+}

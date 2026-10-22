@@ -31,6 +31,7 @@ from __future__ import annotations
 import argparse
 from dataclasses import asdict
 import json
+import logging
 from pathlib import Path
 import subprocess
 import sys
@@ -138,4 +139,5 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
     main()

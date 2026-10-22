@@ -12,6 +12,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import hashlib
 import json
+import logging
 import platform
 import time
 import zipfile
@@ -20,6 +21,8 @@ import numpy as np
 import torch
 from scipy.stats import bootstrap
 from torch import nn
+
+logger = logging.getLogger(__name__)
 
 
 def angle_difference(a, b):
@@ -282,6 +285,9 @@ def train_ensemble(train: SplitData, val: SplitData, config: TrainConfig | None 
                     if not np.isfinite(val_loss):
                         raise ValueError("Non-finite validation loss")
                     history.append({"epoch": epoch, "train_loss": train_loss / len(tx), "val_loss": val_loss})
+                    if epoch == 1 or epoch % 10 == 0:
+                        logger.info("Seed %s, epoch %s/%s: train loss %.6g, val loss %.6g",
+                                    seed, epoch, config.epochs, train_loss / len(tx), val_loss)
                     if val_loss < best_loss - config.min_delta:
                         best_loss, best_epoch, stale = val_loss, epoch, 0
                         best_state = {k: v.detach().clone() for k, v in model.state_dict().items()}
@@ -290,6 +296,8 @@ def train_ensemble(train: SplitData, val: SplitData, config: TrainConfig | None 
                     if stale >= config.patience:
                         break
                 model.load_state_dict(best_state)
+                logger.info("Seed %s finished: best epoch %s, val loss %.6g (%s epochs run)",
+                            seed, best_epoch, best_loss, epoch)
                 models.append(model)
                 records.append({"seed": seed, "best_epoch": best_epoch, "epochs_run": epoch,
                                 "best_val_loss": best_loss, "history": history})
