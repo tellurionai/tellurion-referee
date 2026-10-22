@@ -1,0 +1,43 @@
+# Reality engine config for the single pendulum (plan-reality-engine.md §3–§5).
+# Perturbation strengths are fixed here before anyone sees model results.
+# Do not tune them to make results look good.
+
+system: pendulum
+dt: 0.05            # s, output grid
+n_steps: 200        # horizon = n_steps * dt = 10 s; arrays have n_steps + 1 samples
+
+splits:             # trajectory counts
+  train: 2000
+  val: 400
+  cal: 600
+  test: 1000
+
+# Share of cal/test that are extra clean gentle runs (trust negatives, for false-alarm rates).
+clean_gentle_frac: 0.2
+
+onset:              # perturbation onset step, uniform integer in [min, max]
+  min: 40
+  max: 120
+
+# severity -> number. "none" is always 0 (= clean run).
+param_shift:
+  length:  {low: 1.05, med: 1.15, high: 1.30}   # L multiplier
+  gravity: {low: 0.95, med: 0.85, high: 0.70}   # g multiplier
+  damping: {low: 0.05, med: 0.15, high: 0.40}   # b [N·m·s/rad], from nominal 0
+
+sensor_fault:       # theta only; omega and the true state are never touched
+  bias:    {low: 0.03, med: 0.08, high: 0.20}   # rad offset from onset
+  drift:   {low: 0.03, med: 0.08, high: 0.20}   # rad offset reached at the last step, linear from 0 at onset
+  noise:   {low: 0.01, med: 0.03, high: 0.08}   # rad Gaussian std from onset
+  scale:   {low: 0.03, med: 0.10, high: 0.25}   # gain error on theta from onset: theta * (1 + s)
+  stuck:   {low: 1, med: 1, high: 1}            # sensor freezes at its onset value (no strength knob)
+  dropout: {low: 0.05, med: 0.20, high: 0.50}   # fraction of post-onset steps missing (NaN, mask 0)
+
+unseen_force:
+  constant_torque: {low: 0.2, med: 0.5, high: 1.0}  # N·m steady torque
+  magnet:          {low: 0.5, med: 1.5, high: 3.0}  # k [N·m]; torque = k sin(phi_m - theta)
+  periodic_drive:  {low: 0.3, med: 0.8, high: 2.0}  # A [N·m]; torque = A cos(w (t - t_onset))
+  impulse:         {low: 0.3, med: 0.8, high: 2.0}  # angular impulse [N·m·s] at onset
+
+magnet_phi_m: 1.2         # rad, magnet direction
+periodic_drive_w: 2.5     # rad/s, off resonance (natural ≈ 3.13 rad/s)
