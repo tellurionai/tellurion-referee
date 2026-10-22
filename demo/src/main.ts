@@ -1,18 +1,9 @@
 // App shell: scenario picker, #scenario=<id> routing, wiring, technical details.
 
 import "./styles.css";
+import { App, idFromHash, problemsOf } from "./app";
 import { Meters } from "./meters";
-import {
-  PLAIN_VERDICT,
-  type Replay,
-  type ReplayIndex,
-  ReplayError,
-  type ScenarioEntry,
-  flagFrame,
-  loadIndex,
-  loadReplay,
-  sample,
-} from "./replay";
+import { PLAIN_VERDICT, type ReplayIndex, flagFrame, loadIndex, loadReplay, sample } from "./replay";
 import { Stage } from "./stage";
 import { Timeline } from "./timeline";
 import { VerdictCard } from "./verdict";
@@ -23,10 +14,8 @@ const stage = new Stage($<HTMLCanvasElement>("stage"));
 const meters = new Meters($("meter-ai"), $("meter-ref"));
 const card = new VerdictCard($("verdict"));
 const techList = $("tech-list");
-let current: Replay | null = null;
-let entry: ScenarioEntry | null = null;
-let index: ReplayIndex;
-const cache = new Map<string, Replay>();
+const errorPanel = $("load-error");
+let app: App | null = null;
 
 const timeline = new Timeline(
   $<HTMLInputElement>("scrub"),
@@ -40,7 +29,7 @@ const slowmo = $<HTMLInputElement>("slowmo");
 slowmo.addEventListener("change", () => (timeline.slowmo = slowmo.checked));
 
 function render(pos: number) {
-  if (!current) return;
+  if (!app?.current) return;
   stage.show(pos);
   meters.show(pos);
   card.show(pos);
@@ -52,7 +41,7 @@ function fmt(v: number | null, digits = 3) {
 }
 
 function renderTech(pos: number) {
-  const r = current!, f = r.frames;
+  const r = app!.current!, f = r.frames;
   const k = Math.floor(pos);
   const meas = sample(f.measured_theta, pos), pred = sample(f.pred_theta, pos);
   const rows: [string, string][] = [
@@ -67,7 +56,7 @@ function renderTech(pos: number) {
     ["Hidden switch", r.perturbation.type === "none" ? "none" : `${r.perturbation.type} / ${r.perturbation.subtype} / ${r.perturbation.severity}`],
     ["Switch flips at", r.onset_step < 0 ? "–" : `frame ${r.onset_step} (${(r.onset_step * r.dt).toFixed(2)} s)`],
     ["Answer key", `${r.expected_verdict} (${PLAIN_VERDICT[r.expected_verdict]})`],
-    ["Selection rule", entry?.selection_rule ?? "–"],
+    ["Selection rule", app!.entry?.selection_rule ?? "–"],
   ];
   techList.replaceChildren(
     ...rows.flatMap(([a, b]) => {
@@ -80,19 +69,23 @@ function renderTech(pos: number) {
   );
 }
 
-function renderPicker(activeId: string) {
-  const nav = $("picker");
-  nav.replaceChildren(
+function renderPicker(index: ReplayIndex) {
+  $("picker").replaceChildren(
     ...index.scenarios.map((s) => {
       const b = document.createElement("button");
       b.type = "button";
       b.className = "chip";
+      b.dataset.id = s.id;
       b.textContent = s.title;
-      b.setAttribute("aria-current", String(s.id === activeId));
       b.addEventListener("click", () => (location.hash = `scenario=${s.id}`));
       return b;
     }),
   );
+}
+
+function highlight(id: string) {
+  const nav = $("picker");
+  for (const b of nav.querySelectorAll<HTMLElement>(".chip")) b.setAttribute("aria-current", String(b.dataset.id === id));
   // Keep the active chip visible in the horizontal strip without scrolling the page.
   const chip = nav.querySelector<HTMLElement>('[aria-current="true"]');
   if (chip && (chip.offsetLeft < nav.scrollLeft || chip.offsetLeft + chip.offsetWidth > nav.scrollLeft + nav.clientWidth)) {
@@ -100,63 +93,56 @@ function renderPicker(activeId: string) {
   }
 }
 
-const autoplay = () => {
-  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) timeline.play();
-};
-
-function idFromHash(): string {
-  const m = location.hash.match(/scenario=([\w-]+)/);
-  const id = m?.[1];
-  return index.scenarios.some((s) => s.id === id) ? id! : index.scenarios[0].id;
-}
-
-async function open(id: string) {
-  const e = index.scenarios.find((s) => s.id === id)!;
-  renderPicker(id);
-  let r = cache.get(id);
-  if (!r) {
-    r = await loadReplay(e);
-    cache.set(id, r);
-  }
-  entry = e;
-  current = r;
-  $("scenario-title").textContent = r.title ?? e.title;
-  $("scenario-description").textContent = r.description ?? "";
-  stage.load(r);
-  meters.load(r);
-  card.load(r);
-  timeline.load({
-    frames: r.frames.t.length,
-    dt: r.dt,
-    onsetFrame: r.onset_step,
-    flagFrame: flagFrame(r),
-    onFrame: render,
-  });
-}
-
-function showError(err: unknown) {
-  const main = document.querySelector("main")!;
-  const div = document.createElement("div");
-  div.className = "error";
-  const problems = err instanceof ReplayError ? err.problems : [String(err)];
-  div.innerHTML = "<strong>Couldn't load replay data.</strong>";
+// Errors go in their own panel; the player stays in place so the next selection can recover.
+function showError(problems: string[]) {
   const ul = document.createElement("ul");
   for (const p of problems) {
     const li = document.createElement("li");
-    li.textContent = err instanceof ReplayError ? `${err.source}: ${p}` : p;
+    li.textContent = p;
     ul.append(li);
   }
-  div.append(ul);
-  main.replaceChildren(div);
+  const title = document.createElement("strong");
+  title.textContent = "Couldn't load replay data.";
+  errorPanel.replaceChildren(title, ul);
+  errorPanel.hidden = false;
 }
+
+function clearError() {
+  errorPanel.hidden = true;
+  errorPanel.replaceChildren();
+}
+
+const autoplay = (shown: boolean) => {
+  if (shown && !matchMedia("(prefers-reduced-motion: reduce)").matches) timeline.play();
+};
 
 async function boot() {
-  index = await loadIndex();
+  let index: ReplayIndex;
+  try {
+    index = await loadIndex();
+  } catch (err) {
+    showError(problemsOf(err));
+    return;
+  }
   $("demo-banner").hidden = !index.is_demo_data;
   $("provenance").textContent = `Replays: ${index.generated_from}`;
-  window.addEventListener("hashchange", () => open(idFromHash()).then(autoplay).catch(showError));
-  await open(idFromHash());
-  autoplay();
+  renderPicker(index);
+  app = new App(index, loadReplay, {
+    highlight,
+    showError,
+    clearError,
+    pause: () => timeline.pause(),
+    show(entry, r) {
+      $("scenario-title").textContent = r.title ?? entry.title;
+      $("scenario-description").textContent = r.description ?? "";
+      stage.load(r);
+      meters.load(r);
+      card.load(r);
+      timeline.load({ frames: r.frames.t.length, dt: r.dt, onsetFrame: r.onset_step, flagFrame: flagFrame(r), onFrame: render });
+    },
+  });
+  window.addEventListener("hashchange", () => app!.open(idFromHash(location.hash, index)).then(autoplay));
+  autoplay(await app.open(idFromHash(location.hash, index)));
 }
 
-boot().catch(showError);
+boot();

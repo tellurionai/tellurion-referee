@@ -25,6 +25,8 @@
 
     <nav class="picker" id="picker" aria-label="Scenarios"></nav>
 
+    <div class="error" id="load-error" role="alert" hidden></div>
+
     <main class="layout">
       <section class="stage-panel" aria-label="Pendulum">
         <div class="scenario-head">
@@ -40,11 +42,11 @@
           <li><span class="swatch swatch-sensor"></span>Sensor reading</li>
         </ul>
         <div class="timeline" id="timeline">
-          <button class="play" id="play" type="button" aria-label="Play">
+          <button class="play" id="play" type="button" aria-label="Play" disabled>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path id="play-icon" d="M8 5v14l11-7z" /></svg>
           </button>
           <div class="track-wrap">
-            <input id="scrub" type="range" min="0" max="200" step="0.01" value="0" aria-label="Time" />
+            <input id="scrub" type="range" min="0" max="200" step="0.01" value="0" aria-label="Time" disabled />
             <div class="marks" aria-hidden="true">
               <span class="mark mark-onset" id="mark-onset" title="Hidden switch flipped"></span>
               <span class="mark mark-flag" id="mark-flag" title="Referee flag"></span>

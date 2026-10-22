@@ -24,7 +24,7 @@ export class Timeline {
   slowmo = true;
   private last = 0;
   private raf = 0;
-  private opts!: TimelineOptions;
+  private opts: TimelineOptions | null = null; // null until the first replay loads
 
   constructor(
     private scrub: HTMLInputElement,
@@ -32,13 +32,18 @@ export class Timeline {
     private playIcon: SVGPathElement,
     private clock: HTMLElement,
     private marks: { onset: HTMLElement; flag: HTMLElement; onsetLabel: HTMLElement; flagLabel: HTMLElement },
+    keyTarget: Pick<EventTarget, "addEventListener"> = document,
   ) {
+    // Controls start disabled in the HTML; every handler also ignores input until load().
     playBtn.addEventListener("click", () => this.toggle());
     scrub.addEventListener("input", () => {
+      if (!this.opts) return;
       this.pause();
       this.seek(Number(scrub.value));
     });
-    document.addEventListener("keydown", (e) => {
+    keyTarget.addEventListener("keydown", (event) => {
+      const e = event as KeyboardEvent;
+      if (!this.opts) return;
       const tag = (e.target as HTMLElement).tagName;
       if (tag === "INPUT" && (e.target as HTMLInputElement).type !== "range") return;
       if (e.code === "Space") {
@@ -55,6 +60,7 @@ export class Timeline {
 
   load(opts: TimelineOptions) {
     this.opts = opts;
+    this.scrub.disabled = this.playBtn.disabled = false;
     this.scrub.max = String(opts.frames - 1);
     this.place(this.marks.onset, this.marks.onsetLabel, opts.onsetFrame);
     this.place(this.marks.flag, this.marks.flagLabel, opts.flagFrame);
@@ -67,12 +73,13 @@ export class Timeline {
     mark.style.display = label.style.display = show ? "block" : "none";
     if (!show) return;
     // Range thumbs inset the track by half a thumb (~8px) on each side.
-    const pct = frame / (this.opts.frames - 1);
+    const pct = frame / (this.opts!.frames - 1);
     const left = `calc(8px + (100% - 16px) * ${pct})`;
     mark.style.left = label.style.left = left;
   }
 
   seek(pos: number) {
+    if (!this.opts) return;
     const max = this.opts.frames - 1;
     this.pos = Math.max(0, Math.min(max, pos));
     this.scrub.value = String(this.pos);
@@ -81,11 +88,13 @@ export class Timeline {
   }
 
   toggle() {
+    if (!this.opts) return;
     if (this.playing) this.pause();
     else this.play();
   }
 
   play() {
+    if (!this.opts) return;
     if (this.pos >= this.opts.frames - 1) this.seek(0);
     this.playing = true;
     this.playBtn.setAttribute("aria-label", "Pause");
@@ -103,7 +112,7 @@ export class Timeline {
   }
 
   private tick = (now: number) => {
-    if (!this.playing) return;
+    if (!this.playing || !this.opts) return;
     const elapsed = Math.min(0.1, (now - this.last) / 1000); // clamp after tab switches
     this.last = now;
     const { dt, flagFrame, frames } = this.opts;
