@@ -9,3 +9,4 @@
 /pyproject.toml            @tellurionai/maintainers
 /Makefile                  @tellurionai/maintainers
 /tests/test_no_test_leakage.py  @tellurionai/maintainers
+/models/                   @tellurionai/maintainers

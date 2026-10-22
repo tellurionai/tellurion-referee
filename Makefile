@@ -1,8 +1,10 @@
 # One command per step. Targets print a notice until their ticket lands; replace the echo with the real command.
 CONFIG ?= configs/base.yaml
 PY ?= python
+# the shared frozen model; override to test a local one: make eval-cal MODEL=artifacts/world_model
+MODEL ?= models/world_model
 
-.PHONY: install data train eval-cal eval-test figures test smoke lint
+.PHONY: install data train publish-model eval-cal eval-test figures test smoke lint
 
 install:
 	$(PY) -m pip install -e '.[dev]'
@@ -14,12 +16,20 @@ data:
 train:
 	$(PY) scripts/train.py --data data/pendulum_v1.npz --out artifacts/world_model
 
+# Copy a trained model into models/world_model, where it is committed and shared.
+# Refuses to overwrite: replacing the shared model needs a deliberate, reviewed PR.
+publish-model:
+	@test -f artifacts/world_model/manifest.json || (echo "no model in artifacts/world_model: run make train" && exit 1)
+	@test ! -f models/world_model/manifest.json || (echo "models/world_model already has a model; remove it in a reviewed PR first" && exit 1)
+	cp artifacts/world_model/manifest.json artifacts/world_model/member_*.pt models/world_model/
+	$(PY) -c "from referee.model import verify_checkpoints; verify_checkpoints('models/world_model'); print('checkpoints verified')"
+
 eval-cal:
-	$(PY) scripts/evaluate.py --config $(CONFIG) --split cal
+	$(PY) scripts/evaluate.py --config $(CONFIG) --split cal --model $(MODEL)
 
 # The locked test split is evaluated ONCE, at Gate 3 (Thu 12:00 ET). Do not run this before then.
 eval-test:
-	$(PY) scripts/evaluate.py --config $(CONFIG) --split test --confirm-locked-test
+	$(PY) scripts/evaluate.py --config $(CONFIG) --split test --confirm-locked-test --model $(MODEL)
 
 figures:
 	@echo "figures: not implemented yet (docs & figures). Will run: $(PY) scripts/make_figures.py --input results/test_metrics.json"

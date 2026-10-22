@@ -328,6 +328,9 @@ def guard_locked_test(results_dir: Path, args) -> None:
 
 
 def load_ensemble(path: Path):
+    if not (path / "manifest.json").is_file():
+        raise SystemExit(f"No frozen model in {path}. The shared model lives in models/world_model "
+                         "(see its README); to try a local one: --model artifacts/world_model.")
     from referee.model import load_ensemble as load  # torch is only needed here
     return load(path)
 
@@ -337,7 +340,8 @@ def main(argv=None, ensemble=None) -> dict:
     ap.add_argument("--config", default="configs/base.yaml")
     ap.add_argument("--split", choices=("cal", "test"), default="cal")
     ap.add_argument("--data", help="dataset prefix or .npz (default: config data_dir)")
-    ap.add_argument("--model", default="artifacts/world_model", help="frozen ensemble directory")
+    ap.add_argument("--model", default="models/world_model",
+                    help="frozen ensemble directory (default: the shared, committed model)")
     ap.add_argument("--results", default="results")
     ap.add_argument("--steps-out", default="artifacts/eval")
     ap.add_argument("--bootstrap", type=int, default=1000)

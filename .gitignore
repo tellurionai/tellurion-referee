@@ -5,6 +5,8 @@ artifacts/
 # *.npz (data/ rule covers generated data)
 *.pt
 *.ckpt
+# the one frozen world model everyone evaluates (models/world_model/README.md)
+!models/world_model/*.pt
 
 # python
 __pycache__/
