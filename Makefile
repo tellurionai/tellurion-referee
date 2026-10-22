@@ -31,13 +31,13 @@ eval-cal:
 eval-test:
 	$(PY) scripts/evaluate.py --config $(CONFIG) --split test --confirm-locked-test --model $(MODEL)
 
-# Real demo replays from the latest evaluation (SPLIT=test after Gate 3)
-SPLIT ?= cal
+# Which results replays/figures use: cal during development, test after Gate 3
+SPLIT ?= test
 replays:
 	$(PY) scripts/export_replays.py --split $(SPLIT)
 
 figures:
-	@echo "figures: not implemented yet (docs & figures). Will run: $(PY) scripts/make_figures.py --input results/test_metrics.json"
+	$(PY) scripts/make_figures.py --input results/$(SPLIT)_metrics.json
 
 test:
 	$(PY) -m pytest -q
