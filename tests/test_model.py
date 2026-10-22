@@ -61,7 +61,7 @@ def test_compressed_handoff_and_masked_transitions(handoff):
     assert np.isfinite(x).all() and np.isfinite(y).all()
 
 
-@pytest.mark.parametrize("corruption", ["ids", "regime", "perturbation", "dt"])
+@pytest.mark.parametrize("corruption", ["ids", "regime", "perturbation", "dt", "n_steps"])
 def test_handoff_rejects_invalid_training_contract(handoff, corruption):
     path, arrays = handoff
     if corruption == "ids":
@@ -70,11 +70,24 @@ def test_handoff_rejects_invalid_training_contract(handoff, corruption):
         arrays["regime"][0] = "large"
     elif corruption == "perturbation":
         arrays["perturbation_type"] = np.full(len(arrays["split"]), "sensor_fault")
-    else:
+    elif corruption == "dt":
         arrays["times"][3] += 0.01
+    else:
+        metadata_path = path.with_suffix(".metadata.json")
+        metadata = json.loads(metadata_path.read_text())
+        metadata["n_steps"] = 99
+        metadata_path.write_text(json.dumps(metadata))
     np.savez(path, **arrays)
     with pytest.raises(ValueError):
         load_split(path, "train")
+
+
+def test_fortran_order_handoff_uses_numpy_reader(handoff):
+    path, arrays = handoff
+    arrays["measured_states"] = np.asfortranarray(arrays["measured_states"])
+    np.savez_compressed(path, **arrays)
+    selected = load_split(path, "train")
+    np.testing.assert_array_equal(selected.states, arrays["measured_states"][:8])
 
 
 @pytest.fixture(scope="module")

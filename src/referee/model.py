@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from tempfile import TemporaryDirectory
 import hashlib
 import json
 import platform
@@ -17,6 +18,7 @@ import zipfile
 
 import numpy as np
 import torch
+from scipy.stats import bootstrap
 from torch import nn
 
 
@@ -53,31 +55,21 @@ class SplitData:
 
 
 def _read_rows(archive, name, indices, total_rows):
-    """Read selected NPY rows inside an NPZ without materializing test states.
+    """Extract one member to disk; NumPy maps it and copies only selected rows.
 
-    ZIP compression may require decompressing skipped bytes internally, but
-    only requested rows are decoded as arrays. No ground-truth members are read.
+    NPZ files cannot be memory-mapped directly. The temporary NPY contains the
+    full member, but test rows are never selected for training or reporting.
+    NumPy handles the file format, dtype, and C/Fortran memory layout.
     """
-    with archive.open(f"{name}.npy") as stream:
-        version = np.lib.format.read_magic(stream)
-        if version == (1, 0):
-            shape, fortran, dtype = np.lib.format.read_array_header_1_0(stream)
-        elif version == (2, 0):
-            shape, fortran, dtype = np.lib.format.read_array_header_2_0(stream)
-        else:
-            raise ValueError(f"Unsupported NPY version for {name}: {version}")
-        if dtype.hasobject or fortran or not shape or shape[0] != total_rows:
-            raise ValueError(f"{name} must be a C-order, non-object array with N rows")
-        offset = stream.tell()
-        row_bytes = int(np.prod(shape[1:])) * dtype.itemsize
-        rows = np.empty((len(indices), *shape[1:]), dtype=dtype)
-        for dest, source in enumerate(indices):
-            stream.seek(offset + int(source) * row_bytes)
-            raw = stream.read(row_bytes)
-            if len(raw) != row_bytes:
-                raise ValueError(f"Truncated {name} array")
-            rows[dest] = np.frombuffer(raw, dtype=dtype).reshape(shape[1:])
-        return rows
+    with TemporaryDirectory(prefix="referee-array-") as directory:
+        path = archive.extract(f"{name}.npy", directory)
+        array = np.load(path, mmap_mode="r", allow_pickle=False)
+        try:
+            if array.ndim == 0 or len(array) != total_rows:
+                raise ValueError(f"{name} must have N rows")
+            return np.array(array[indices], copy=True)
+        finally:
+            del array  # Release the mapping before deleting the file on Windows.
 
 
 def load_split(path: str | Path, split: str) -> SplitData:
@@ -113,7 +105,8 @@ def load_split(path: str | Path, split: str) -> SplitData:
         raise ValueError("times must be a finite, increasing, uniformly spaced grid")
     if not np.isclose(metadata["dt"], times[1] - times[0]):
         raise ValueError("metadata dt disagrees with times")
-    if metadata.get("horizon", len(times) - 1) != len(times) - 1:
+    n_steps = metadata.get("n_steps", metadata.get("horizon", len(times) - 1))
+    if n_steps != len(times) - 1:
         raise ValueError("metadata horizon disagrees with times")
     with zipfile.ZipFile(path) as archive:
         selected = {key: _read_rows(archive, key, indices, len(ids)) for key in
@@ -281,8 +274,11 @@ def train_ensemble(train: SplitData, val: SplitData, config: TrainConfig | None 
                         train_loss += float(loss.detach()) * len(batch)
                     model.eval()
                     with torch.no_grad():
-                        val_loss = sum(float((((model(x) - y) / model.delta_scale) ** 2).mean()) * len(x)
-                                       for x, y in zip(vx.split(config.batch_size), vy.split(config.batch_size))) / len(vx)
+                        val_loss = 0.0
+                        for x, y in zip(vx.split(config.batch_size), vy.split(config.batch_size)):
+                            error = (model(x) - y) / model.delta_scale
+                            val_loss += float(error.square().mean()) * len(x)
+                        val_loss /= len(vx)
                     if not np.isfinite(val_loss):
                         raise ValueError("Non-finite validation loss")
                     history.append({"epoch": epoch, "train_loss": train_loss / len(tx), "val_loss": val_loss})
@@ -335,19 +331,28 @@ def save_ensemble(directory, ensemble, training):
     ensemble.checkpoint_sha256 = [c["sha256"] for c in checkpoints]
 
 
-def load_ensemble(directory):
-    """Verify every SHA256 before CPU loading. Never resumes or changes weights."""
+def verify_checkpoints(directory):
+    """Read the manifest and verify hashes without constructing neural networks."""
     directory = Path(directory)
     manifest = json.loads((directory / "manifest.json").read_text(encoding="utf-8"))
     if manifest["format_version"] != 1:
         raise ValueError("Unsupported checkpoint format")
-    models = []
     for item in manifest["checkpoints"]:
         if Path(item["file"]).name != item["file"]:
             raise ValueError("Checkpoint file must be a local filename")
         path = directory / item["file"]
         if sha256_file(path) != item["sha256"]:
             raise ValueError(f"SHA256 mismatch: {path.name}")
+    return manifest
+
+
+def load_ensemble(directory):
+    """Verify every SHA256 before CPU loading. Never resumes or changes weights."""
+    directory = Path(directory)
+    manifest = verify_checkpoints(directory)
+    models = []
+    for item in manifest["checkpoints"]:
+        path = directory / item["file"]
         saved = torch.load(path, map_location="cpu", weights_only=True)
         model = DynamicsModel(saved["hidden_sizes"])
         model.load_state_dict(saved["state_dict"])
@@ -362,6 +367,18 @@ def _sustained_crossing(errors, threshold, consecutive):
         if np.all(errors[start:start + consecutive] > threshold):
             return start + 1  # forecast steps start at 1, not 0
     return None
+
+
+def _bootstrap_ci(values, statistic, samples, rng):
+    """Percentile CI resampling trajectory-level values, including tiny fixtures."""
+    if len(values) == 0:
+        return None
+    if len(values) == 1:
+        value = float(statistic(values))
+        return [value, value]
+    result = bootstrap((values,), statistic, n_resamples=samples,
+                       method="percentile", vectorized=False, rng=rng)
+    return [float(result.confidence_interval.low), float(result.confidence_interval.high)]
 
 
 def model_report(ensemble, data: SplitData, threshold=0.25, sustained_steps=3,
@@ -420,24 +437,18 @@ def model_report(ensemble, data: SplitData, threshold=0.25, sustained_steps=3,
             continue
         mse = np.array([d["one_step_normalized_mse"] for d in details])
         horizons = np.array([d["reliability_horizon_steps"] for d in details if d["observed_horizon_steps"] > 0])
-        rmse_draws, horizon_draws = [], []
-        for _ in range(bootstrap_samples):
-            draw = rng.integers(len(details), size=len(details))
-            rmse_draws.append(float(np.sqrt(mse[draw].mean())))
-            sampled = [details[j]["reliability_horizon_steps"] for j in draw
-                       if details[j]["observed_horizon_steps"] > 0]
-            if sampled:
-                horizon_draws.append(float(np.median(sampled)))
+        rmse_ci = _bootstrap_ci(mse, lambda x: np.sqrt(x.mean()), bootstrap_samples, rng)
+        horizon_ci = _bootstrap_ci(horizons, np.median, bootstrap_samples, rng)
         regimes[regime] = {
             "status": "measured", "n_trajectories": len(details),
             "n_transitions": sum(d["n_transitions"] for d in details),
             "one_step_normalized_rmse": float(np.sqrt(mse.mean())),
-            "one_step_normalized_rmse_ci95": np.percentile(rmse_draws, [2.5, 97.5]).tolist(),
+            "one_step_normalized_rmse_ci95": rmse_ci,
             "one_step_angle_rmse_rad": float(np.sqrt(np.mean([d["angle_mse"] for d in details]))),
             "one_step_omega_rmse_rad_s": float(np.sqrt(np.mean([d["omega_mse"] for d in details]))),
             "reliability_horizon_steps_median": float(np.median(horizons)) if horizons.size else None,
             "reliability_horizon_seconds_median": float(np.median(horizons) * data.dt) if horizons.size else None,
-            "reliability_horizon_steps_ci95": np.percentile(horizon_draws, [2.5, 97.5]).tolist() if horizon_draws else None,
+            "reliability_horizon_steps_ci95": horizon_ci,
             "n_horizon_trajectories": int(horizons.size),
             "n_right_censored": sum(d["right_censored"] for d in details if d["observed_horizon_steps"] > 0),
             "trajectories": details,
